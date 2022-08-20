@@ -58,8 +58,8 @@ import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
 import pl.pabilo8.immersiveintelligence.api.bullets.DamageBlockPos;
 import pl.pabilo8.immersiveintelligence.api.data.DataPacket;
 import pl.pabilo8.immersiveintelligence.api.data.IDataConnector;
-import pl.pabilo8.immersiveintelligence.api.data.types.DataPacketTypeItemStack;
-import pl.pabilo8.immersiveintelligence.api.data.types.DataPacketTypeString;
+import pl.pabilo8.immersiveintelligence.api.data.types.DataTypeItemStack;
+import pl.pabilo8.immersiveintelligence.api.data.types.DataTypeString;
 import pl.pabilo8.immersiveintelligence.api.data.types.IDataType;
 import pl.pabilo8.immersiveintelligence.api.utils.IWrench;
 import pl.pabilo8.immersiveintelligence.api.utils.MachineUpgrade;
@@ -67,6 +67,7 @@ import pl.pabilo8.immersiveintelligence.client.model.ModelIIBase;
 import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
 import pl.pabilo8.immersiveintelligence.common.CommonProxy;
 import pl.pabilo8.immersiveintelligence.common.blocks.BlockIIBase;
+import pl.pabilo8.immersiveintelligence.common.blocks.BlockIIMultiblock;
 import pl.pabilo8.immersiveintelligence.common.entity.bullets.EntityBullet;
 import pl.pabilo8.immersiveintelligence.common.items.ItemIIBase;
 
@@ -522,11 +523,12 @@ public class Utils
 	 * @param force
 	 * @param gravity
 	 * @param drag
+	 * @param anglePrecision
 	 * @return
 	 * @author desht
 	 * @author MineMaarten
 	 */
-	public static float calculateBallisticAngle(double distance, double height, float force, double gravity, double drag)
+	public static float calculateBallisticAngle(double distance, double height, float force, double gravity, double drag, double anglePrecision)
 	{
 		double bestAngle = 0;
 		double bestDistance = Float.MAX_VALUE;
@@ -537,7 +539,7 @@ public class Utils
 		// simulate the trajectory for angles from 45 to 90 degrees,
 		// returning the angle which lands the projectile closest to the target distance
 //        for (double i = Math.PI * 0.25D; i < Math.PI * 0.50D; i += 0.001D) {
-		for(double i = Math.PI*0.01D; i < Math.PI*0.5D; i += 0.01D)
+		for(double i = Math.PI*anglePrecision; i < Math.PI*0.5D; i += anglePrecision)
 		{
 			double motionX = MathHelper.cos((float)i)*force;// calculate the x component of the vector
 			double motionY = MathHelper.sin((float)i)*force;// calculate the y component of the vector
@@ -545,11 +547,11 @@ public class Utils
 			double posY = 0;
 			while(posY > height||motionY > 0)
 			{ // simulate movement, until we reach the y-level required
-				posX += motionX;
-				posY += motionY;
-				motionY -= gravity;
 				motionX *= drag;
 				motionY *= drag;
+				motionY -= gravity;
+				posX += motionX;
+				posY += motionY;
 			}
 			double distanceToTarget = Math.abs(distance-posX);
 			if(distanceToTarget < bestDistance)
@@ -558,6 +560,25 @@ public class Utils
 				bestAngle = i;
 			}
 		}
+		/*ImmersiveIntelligence.logger.info(String.format("Best Distance: %s/%s", (distance-bestDistance), distance));
+		ImmersiveIntelligence.logger.info("Calculated Trajectory:");
+		{
+			double motionX = MathHelper.cos((float)bestAngle)*force;// calculate the x component of the vector
+			double motionY = MathHelper.sin((float)bestAngle)*force;// calculate the y component of the vector
+			double posX = 0;
+			double posY = 0;
+			while(posY > height||motionY > 0)
+			{ // simulate movement, until we reach the y-level required
+				motionX *= drag;
+				motionY *= drag;
+				motionY -= gravity;
+				posX += motionX;
+				posY += motionY;
+				ImmersiveIntelligence.logger.info(posX+", "+posY);
+			}
+		}
+		ImmersiveIntelligence.logger.info("---");*/
+
 		return 90F-(float)(bestAngle*180D/Math.PI);
 	}
 
@@ -739,7 +760,7 @@ public class Utils
 		Block block = world.getBlockState(blockpos).getBlock();
 		TileEntity te = world.getTileEntity(blockpos);
 		boolean hasBreak = block instanceof BlockChest||block instanceof BlockEnderChest
-				||block instanceof BlockSign||block instanceof BlockSkull;
+				||block instanceof BlockSign||block instanceof BlockSkull||block instanceof BlockIIMultiblock<?>;
 		if(!hasBreak) hasBreak = te!=null&&te.canRenderBreaking();
 		if(!hasBreak)
 		{
@@ -1047,7 +1068,7 @@ public class Utils
 				dist -= force;
 				force *= 0.99;
 				baseMotionYC *= 0.99f;
-				gravityMotionY -= gravity/1.5f;
+				gravityMotionY -= gravity/force;
 				motionY += (baseMotionYC+gravityMotionY);
 			}
 
@@ -1119,11 +1140,31 @@ public class Utils
 
 	public static IngredientStack ingredientFromData(IDataType dataType)
 	{
-		if(dataType instanceof DataPacketTypeItemStack)
-			return new IngredientStack((((DataPacketTypeItemStack)dataType).value.copy()));
-		else if(dataType instanceof DataPacketTypeString)
+		if(dataType instanceof DataTypeItemStack)
+			return new IngredientStack((((DataTypeItemStack)dataType).value.copy()));
+		else if(dataType instanceof DataTypeString)
 			return new IngredientStack(dataType.valueToString());
 		else
 			return new IngredientStack("*");
 	}
+
+	public static DataPacket getSimpleCallbackMessage(DataPacket packet, String parameter, IDataType value)
+	{
+		packet.setVariable('c', new DataTypeString(parameter));
+		packet.setVariable('g', value);
+		return packet;
+	}
+
+	/**
+	 * No idea why make this client-side only...
+	 */
+	public static void setEntityVelocity(Entity entity, double motionX, double motionY, double motionZ)
+	{
+		entity.motionX = motionX;
+		entity.motionY = motionY;
+		entity.motionZ = motionZ;
+		entity.velocityChanged = true;
+	}
+
+
 }

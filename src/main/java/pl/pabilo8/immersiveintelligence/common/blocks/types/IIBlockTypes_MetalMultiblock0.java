@@ -14,8 +14,8 @@ public enum IIBlockTypes_MetalMultiblock0 implements IStringSerializable, BlockI
 	CHEMICAL_BATH(true),
 	ELECTROLYZER(true),
 	PRECISSION_ASSEMBLER(true),
-	BALLISTIC_COMPUTER(false),
-	ARTILLERY_HOWITZER(false),
+	BALLISTIC_COMPUTER(true),
+	ARTILLERY_HOWITZER(true),
 	PERISCOPE(false),
 	CONVEYOR_SCANNER(false),
 	AMMUNITION_FACTORY(false), //deprecated

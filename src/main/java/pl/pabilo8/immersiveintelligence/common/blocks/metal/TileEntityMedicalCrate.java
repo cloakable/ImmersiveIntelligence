@@ -33,6 +33,7 @@ import pl.pabilo8.immersiveintelligence.common.IIContent;
 import pl.pabilo8.immersiveintelligence.common.IIGuiList;
 import pl.pabilo8.immersiveintelligence.common.IIPotions;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
@@ -63,7 +64,8 @@ public class TileEntityMedicalCrate extends TileEntityEffectCrate implements ITi
 	public boolean shouldBoost = true;
 
 	@Override
-	public ItemStack getTileDrop(EntityPlayer player, IBlockState state)
+	@Nonnull
+	public ItemStack getTileDrop(EntityPlayer player, @Nonnull IBlockState state)
 	{
 		ItemStack tileDrop = super.getTileDrop(player, state);
 		ItemNBTHelper.setTagCompound(tileDrop, "tank", tanks[0].writeToNBT(new NBTTagCompound()));
@@ -126,7 +128,7 @@ public class TileEntityMedicalCrate extends TileEntityEffectCrate implements ITi
 	}
 
 	@Override
-	void affectEntity(Entity entity, boolean upgraded)
+	boolean affectEntity(Entity entity, boolean upgraded)
 	{
 		if(!upgraded||(repairCrateEnergyPerAction <= energyStorage))
 		{
@@ -152,20 +154,16 @@ public class TileEntityMedicalCrate extends TileEntityEffectCrate implements ITi
 			}
 			if(!upgraded&&healed)
 				energyStorage -= mediCrateEnergyPerAction;
+			return healed;
 		}
+		return false;
 	}
 
 	@Override
 	boolean checkEntity(Entity entity)
 	{
-		return entity instanceof EntityLivingBase;
-	}
-
-
-	@Override
-	public Vec3d getConnectionOffset(Connection con)
-	{
-		return new Vec3d(0.5, 0.5, 0.5);
+		return entity instanceof EntityLivingBase&&
+				((EntityLivingBase)entity).getHealth()!=((EntityLivingBase)entity).getMaxHealth();
 	}
 
 	@Override
