@@ -1,9 +1,12 @@
 package pl.pabilo8.immersiveintelligence.api.data.operations.text;
 
-import pl.pabilo8.immersiveintelligence.api.Utils;
+import pl.pabilo8.immersiveintelligence.common.IIUtils;
 import pl.pabilo8.immersiveintelligence.api.data.DataPacket;
 import pl.pabilo8.immersiveintelligence.api.data.operations.DataOperation;
-import pl.pabilo8.immersiveintelligence.api.data.types.*;
+import pl.pabilo8.immersiveintelligence.api.data.types.DataTypeBoolean;
+import pl.pabilo8.immersiveintelligence.api.data.types.DataTypeExpression;
+import pl.pabilo8.immersiveintelligence.api.data.types.DataTypeString;
+import pl.pabilo8.immersiveintelligence.api.data.types.IDataType;
 
 /**
  * @author Pabilo8
@@ -24,6 +27,6 @@ public class DataOperationStringCamelCase extends DataOperation
 	{
 		DataTypeString t1 = packet.getVarInType(DataTypeString.class, data.getArgument(0));
 		DataTypeBoolean t2 = packet.getVarInType(DataTypeBoolean.class, data.getArgument(1));
-		return new DataTypeString(Utils.toCamelCase(t1.value,t2.value));
+		return new DataTypeString(IIUtils.toCamelCase(t1.value,t2.value));
 	}
 }

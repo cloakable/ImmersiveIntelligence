@@ -6,12 +6,11 @@ import pl.pabilo8.immersiveintelligence.api.data.DataPacket;
 import pl.pabilo8.immersiveintelligence.api.data.operations.DataOperation;
 import pl.pabilo8.immersiveintelligence.api.data.pol.instructions.*;
 import pl.pabilo8.immersiveintelligence.api.data.types.*;
-import pl.pabilo8.immersiveintelligence.common.items.ItemIIFunctionalCircuit.Circuit;
+import pl.pabilo8.immersiveintelligence.common.item.data.ItemIIFunctionalCircuit.Circuits;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class POLScript
 {
-	private static Pattern SPECIAL_REGEX_CHARS = Pattern.compile("[{}()\\[\\].+*?^$\\\\|]");
+	private static final Pattern SPECIAL_REGEX_CHARS = Pattern.compile("[{}()\\[\\].+*?^$\\\\|]");
 
 	private final HashMap<String, Tuple<Integer, Integer>> markers;
 	private final POLInstruction[] instructions;
@@ -43,7 +42,7 @@ public class POLScript
 	}
 
 	/**
-	 * @return
+	 * @return text processed into POL keywords and arguments
 	 */
 	protected static ArrayList<Tuple<POLKeywords, String>> processText(ArrayList<String> text)
 	{
@@ -131,9 +130,9 @@ public class POLScript
 				// TODO: 17.04.2022 devices
 				case USE: //add a circuit
 				{
-					Circuit circuit = Arrays.stream(Circuit.values())
+					Circuits circuit = Arrays.stream(Circuits.values())
 							.filter(e -> e.getName().equals(rest.toLowerCase()))
-							.findFirst().orElse(Circuit.ARITHMETIC);
+							.findFirst().orElse(Circuits.ARITHMETIC);
 					for(String function : circuit.getFunctions())
 						operations.add(DataOperations.getOperationInstance(function));
 				}
@@ -405,14 +404,12 @@ public class POLScript
 			try
 			{
 				data = countChars(num, '.') > 0?new DataTypeFloat(Float.parseFloat(num)): new DataTypeInteger(Integer.parseInt(num));
-			}
-			catch(Exception i)
+			} catch(Exception i)
 			{
 				try
 				{
 					data = new DataTypeInteger(Integer.parseInt(num));
-				}
-				catch(Exception i2)
+				} catch(Exception i2)
 				{
 					data = new DataTypeInteger(0);
 				}

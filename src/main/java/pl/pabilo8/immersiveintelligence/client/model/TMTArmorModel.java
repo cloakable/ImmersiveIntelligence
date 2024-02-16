@@ -12,7 +12,7 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class TMTArmorModel extends ModelBiped
 	public ModelRendererTurbo[] headModel, bodyModel, leftArmModel, rightArmModel, leftLegModel, rightLegModel, leftFootModel, rightFootModel;
 	//List of parts for group flipping / translation / rotation
 	public HashMap<String, ModelRendererTurbo[]> parts = new HashMap<>();
-	private final String texture;
+	private String texture;
 	private ItemStack renderStack = ItemStack.EMPTY;
 	protected EntityEquipmentSlot renderSlot = EntityEquipmentSlot.HEAD;
 
@@ -35,6 +35,11 @@ public class TMTArmorModel extends ModelBiped
 		//yOffset
 		super(1, 0, textureWidthIn, textureHeightIn);
 		this.texture = texture;
+	}
+
+	protected void setTexture(String tex)
+	{
+		texture = tex;
 	}
 
 	@Override

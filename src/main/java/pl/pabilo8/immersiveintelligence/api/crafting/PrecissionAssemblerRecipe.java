@@ -9,10 +9,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.oredict.OreDictionary;
-import pl.pabilo8.immersiveintelligence.Config.IIConfig.Machines.PrecissionAssembler;
-import pl.pabilo8.immersiveintelligence.api.utils.IPrecissionTool;
+import pl.pabilo8.immersiveintelligence.api.utils.tools.IPrecisionTool;
+import pl.pabilo8.immersiveintelligence.common.IIConfigHandler.IIConfig.Machines.PrecisionAssembler;
 import pl.pabilo8.immersiveintelligence.common.IIContent;
-import pl.pabilo8.immersiveintelligence.common.items.ItemIIAssemblyScheme;
+import pl.pabilo8.immersiveintelligence.common.item.crafting.ItemIIAssemblyScheme;
 
 import java.util.*;
 
@@ -22,8 +22,7 @@ import java.util.*;
  */
 public class PrecissionAssemblerRecipe extends MultiblockRecipe
 {
-	public float energyModifier = 1.0F;
-	public float timeModifier = 1.0F;
+	public float timeModifier;
 
 	public ItemStack output;
 	public ItemStack trashOutput;
@@ -31,8 +30,8 @@ public class PrecissionAssemblerRecipe extends MultiblockRecipe
 	public String[] tools;
 	public String[] animations;
 
-	public static HashMap<String, IPrecissionTool> toolMap = new HashMap<>();
-	public static ArrayList<PrecissionAssemblerRecipe> recipeList = new ArrayList();
+	public static HashMap<String, IPrecisionTool> toolMap = new HashMap<>();
+	public static ArrayList<PrecissionAssemblerRecipe> recipeList = new ArrayList<>();
 
 	int totalProcessTime;
 	int totalProcessEnergy;
@@ -47,7 +46,7 @@ public class PrecissionAssemblerRecipe extends MultiblockRecipe
 			this.inputs[io] = ApiUtils.createIngredientStack(itemInputs[io]);
 
 		//Open time + close time
-		int processDuration = 2*PrecissionAssembler.hatchTime;
+		int processDuration = 2*PrecisionAssembler.hatchTime;
 
 		for(String animation : animations)
 		{
@@ -63,7 +62,7 @@ public class PrecissionAssemblerRecipe extends MultiblockRecipe
 		this.tools = tools;
 		this.animations = animations;
 
-		this.totalProcessEnergy = (int)Math.floor((float)energy*energyModifier);
+		this.totalProcessEnergy = (int)Math.floor((float)energy);
 		this.timeModifier = timeMultiplier;
 		this.totalProcessTime = (int)Math.floor((float)processDuration*this.timeModifier);
 
@@ -82,7 +81,7 @@ public class PrecissionAssemblerRecipe extends MultiblockRecipe
 
 	public static List<PrecissionAssemblerRecipe> removeRecipesForOutput(ItemStack stack)
 	{
-		List<PrecissionAssemblerRecipe> list = new ArrayList();
+		List<PrecissionAssemblerRecipe> list = new ArrayList<>();
 		Iterator<PrecissionAssemblerRecipe> it = recipeList.iterator();
 		while(it.hasNext())
 		{
@@ -134,8 +133,8 @@ public class PrecissionAssemblerRecipe extends MultiblockRecipe
 				ArrayList<String> availableTools = new ArrayList<>();
 				for(ItemStack toolstack : tools)
 				{
-					if(!toolstack.isEmpty()&&toolstack.getItem() instanceof IPrecissionTool)
-						availableTools.add(((IPrecissionTool)toolstack.getItem()).getPrecissionToolType(toolstack));
+					if(!toolstack.isEmpty()&&toolstack.getItem() instanceof IPrecisionTool)
+						availableTools.add(((IPrecisionTool)toolstack.getItem()).getPrecissionToolType(toolstack));
 				}
 
 				for(String tool : neededTools)
@@ -220,7 +219,7 @@ public class PrecissionAssemblerRecipe extends MultiblockRecipe
 		return this.totalProcessEnergy;
 	}
 
-	public static void registerToolType(String name, IPrecissionTool tool)
+	public static void registerToolType(String name, IPrecisionTool tool)
 	{
 		toolMap.put(name, tool);
 	}

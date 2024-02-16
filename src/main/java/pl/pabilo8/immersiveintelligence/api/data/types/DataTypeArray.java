@@ -7,19 +7,19 @@ import pl.pabilo8.immersiveintelligence.api.data.DataPacket;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * @author Pabilo8
  * @since 2019-06-01
  */
-public class DataTypeArray implements IDataType
+public class DataTypeArray implements IDataTypeIterable
 {
 	public IDataType[] value;
 
 	public DataTypeArray(IDataType... i)
 	{
-		this.value = i;
+		this.value = new IDataType[Math.min(i.length, 255)];
+		System.arraycopy(i, 0, this.value, 0, this.value.length);
 	}
 
 	public DataTypeArray()
@@ -51,7 +51,7 @@ public class DataTypeArray implements IDataType
 		StringBuilder s = new StringBuilder("[");
 		for(IDataType type : value)
 			s.append(type.valueToString()).append(", ");
-		return s.delete(s.length()-2,s.length()-1).append("]").toString();
+		return s.delete(s.length()-2, s.length()-1).append("]").toString();
 	}
 
 	@Override

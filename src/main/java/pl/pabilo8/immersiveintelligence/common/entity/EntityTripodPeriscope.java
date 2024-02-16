@@ -7,23 +7,23 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import pl.pabilo8.immersiveintelligence.Config.IIConfig.Tools.TripodPeriscope;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import pl.pabilo8.immersiveintelligence.common.IIConfigHandler.IIConfig.Tools.TripodPeriscope;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
-import pl.pabilo8.immersiveintelligence.api.Utils;
-import pl.pabilo8.immersiveintelligence.api.camera.CameraHandler;
-import pl.pabilo8.immersiveintelligence.api.utils.IAdvancedZoomTool;
-import pl.pabilo8.immersiveintelligence.api.utils.IEntityZoomProvider;
+import pl.pabilo8.immersiveintelligence.api.utils.camera.IEntityZoomProvider;
+import pl.pabilo8.immersiveintelligence.api.utils.tools.IAdvancedZoomTool;
+import pl.pabilo8.immersiveintelligence.client.util.CameraHandler;
 import pl.pabilo8.immersiveintelligence.common.IIContent;
+import pl.pabilo8.immersiveintelligence.common.IIUtils;
 
-import static pl.pabilo8.immersiveintelligence.Config.IIConfig.Tools.TripodPeriscope.tripod_zoom_steps;
+import static pl.pabilo8.immersiveintelligence.common.IIConfigHandler.IIConfig.Tools.TripodPeriscope.tripodZoomSteps;
 
 /**
  * @author Pabilo8
@@ -49,14 +49,14 @@ public class EntityTripodPeriscope extends Entity implements IEntityZoomProvider
 	@Override
 	public void onUpdate()
 	{
-		if(!world.isRemote&&world.getTotalWorldTime()%20==0&&!world.getBlockState(getPosition().down()).isSideSolid(world,getPosition().down(), EnumFacing.UP))
+		if(!world.isRemote&&world.getTotalWorldTime()%20==0&&!world.getBlockState(getPosition().down()).isSideSolid(world, getPosition().down(), EnumFacing.UP))
 		{
 			setDead();
 			entityDropItem(this.getPickedResult(null), 0f);
 		}
 
 		//setupTime = 0;
-		if(setupTime < TripodPeriscope.setup_time)
+		if(setupTime < TripodPeriscope.setupTime)
 			setupTime += 1;
 		else
 		{
@@ -76,7 +76,7 @@ public class EntityTripodPeriscope extends Entity implements IEntityZoomProvider
 	{
 		if(world.isRemote&&passenger instanceof EntityPlayerSP)
 		{
-			CameraHandler.INSTANCE.setEnabled(false);
+			CameraHandler.setEnabled(false);
 			ZoomHandler.isZooming = false;
 		}
 		super.removePassenger(passenger);
@@ -97,7 +97,7 @@ public class EntityTripodPeriscope extends Entity implements IEntityZoomProvider
 			entityDropItem(this.getPickedResult(null), 0f);
 			return true;
 		}
-		if(setupTime==TripodPeriscope.setup_time&&player.getRidingEntity()!=this&&this.getPassengers().size()==0)
+		if(setupTime==TripodPeriscope.setupTime&&player.getRidingEntity()!=this&&this.getPassengers().size()==0)
 		{
 			player.startRiding(this);
 			return true;
@@ -121,8 +121,8 @@ public class EntityTripodPeriscope extends Entity implements IEntityZoomProvider
 			float headYaw = MathHelper.wrapDegrees(this.periscopeYaw);
 			double true_angle = Math.toRadians((-headYaw) > 180?360f-(-headYaw): (-headYaw));
 			double true_angle2 = Math.toRadians((-headYaw-90) > 180?360f-(-headYaw-90): (-headYaw-90));
-			Vec3d pos2 = Utils.offsetPosDirection(-0.5f, true_angle, 0);
-			Vec3d pos3 = Utils.offsetPosDirection(-0.0625f/2f, true_angle2, 0);
+			Vec3d pos2 = IIUtils.offsetPosDirection(-0.5f, true_angle, 0);
+			Vec3d pos3 = IIUtils.offsetPosDirection(-0.0625f/2f, true_angle2, 0);
 
 			passenger.setPosition(pos.getX()+0.5+pos2.x+pos3.x, pos.getY(), pos.getZ()+0.5+pos2.z+pos3.z);
 		}
@@ -155,7 +155,7 @@ public class EntityTripodPeriscope extends Entity implements IEntityZoomProvider
 	{
 		periscopeNextYaw = MathHelper.wrapDegrees(yaw);
 		float y = MathHelper.wrapDegrees(360+periscopeNextYaw-this.periscopeYaw);
-		this.periscopeYaw = MathHelper.wrapDegrees(periscopeYaw+(Math.signum(y)*MathHelper.clamp(Math.abs(y), 0, TripodPeriscope.turn_speed)));
+		this.periscopeYaw = MathHelper.wrapDegrees(periscopeYaw+(Math.signum(y)*MathHelper.clamp(Math.abs(y), 0, TripodPeriscope.turnSpeed)));
 	}
 
 	@Override
@@ -185,20 +185,22 @@ public class EntityTripodPeriscope extends Entity implements IEntityZoomProvider
 	@Override
 	public void readSpawnData(ByteBuf additionalData)
 	{
-		this.setupTime=additionalData.readInt();
+		this.setupTime = additionalData.readInt();
 	}
 
 	private static class TripodZoom implements IAdvancedZoomTool
 	{
+		private static final ResourceLocation SIGHTS_TEXTURE = new ResourceLocation(ImmersiveIntelligence.MODID, "textures/gui/item/binoculars.png");
 
 		@Override
-		public String getZoomOverlayTexture(ItemStack stack, EntityPlayer player)
+		@SideOnly(Side.CLIENT)
+		public ResourceLocation getZoomOverlayTexture(ItemStack stack, EntityPlayer player)
 		{
-			return ImmersiveIntelligence.MODID+":textures/gui/item/binoculars.png";
+			return SIGHTS_TEXTURE;
 		}
 
 		@Override
-		public boolean canZoom(ItemStack stack, EntityPlayer player)
+		public boolean shouldZoom(ItemStack stack, EntityPlayer player)
 		{
 			return true;
 		}
@@ -206,7 +208,7 @@ public class EntityTripodPeriscope extends Entity implements IEntityZoomProvider
 		@Override
 		public float[] getZoomSteps(ItemStack stack, EntityPlayer player)
 		{
-			return tripod_zoom_steps;
+			return tripodZoomSteps;
 		}
 	}
 }

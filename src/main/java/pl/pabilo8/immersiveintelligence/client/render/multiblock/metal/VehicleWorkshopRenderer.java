@@ -13,11 +13,11 @@ import pl.pabilo8.immersiveintelligence.client.model.multiblock.metal.ModelVehic
 import pl.pabilo8.immersiveintelligence.client.model.multiblock.metal.vehicle_workshop.ModelCrane;
 import pl.pabilo8.immersiveintelligence.client.model.multiblock.metal.vehicle_workshop.ModelHeavyInserter;
 import pl.pabilo8.immersiveintelligence.client.render.IReloadableModelContainer;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
-import pl.pabilo8.immersiveintelligence.client.tmt.TmtUtil;
-import pl.pabilo8.immersiveintelligence.common.blocks.multiblocks.metal.tileentities.second.TileEntityVehicleWorkshop;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.TmtUtil;
+import pl.pabilo8.immersiveintelligence.common.block.multiblock.metal_multiblock1.tileentity.TileEntityVehicleWorkshop;
 
-import static pl.pabilo8.immersiveintelligence.api.Utils.drawRope;
+import static pl.pabilo8.immersiveintelligence.client.IIClientUtils.drawRope;
 
 /**
  * @author Pabilo8
@@ -217,7 +217,7 @@ public class VehicleWorkshopRenderer extends TileEntitySpecialRenderer<TileEntit
 		for(ModelRendererTurbo mod : modelInserter.inserterLowerArmModel)
 			mod.render(0.0625f);
 
-		GlStateManager.translate(0f, 16F/16f, -0.0625f);
+		GlStateManager.translate(0f, 1.0f, -0.0625f);
 		GlStateManager.rotate(135-(95f*progress), 1, 0, 0);
 		GlStateManager.translate(0f, 0.0625f, 0.03125f);
 

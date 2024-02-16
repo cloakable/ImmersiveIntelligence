@@ -12,8 +12,8 @@ import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
 import pl.pabilo8.immersiveintelligence.api.crafting.VulcanizerRecipe;
 import pl.pabilo8.immersiveintelligence.client.model.multiblock.metal.ModelVulcanizer;
 import pl.pabilo8.immersiveintelligence.client.render.IReloadableModelContainer;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
-import pl.pabilo8.immersiveintelligence.common.blocks.multiblocks.metal.tileentities.second.TileEntityVulcanizer;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.common.block.multiblock.metal_multiblock1.tileentity.TileEntityVulcanizer;
 
 /**
  * @author Pabilo8
@@ -38,9 +38,6 @@ public class VulcanizerRenderer extends TileEntitySpecialRenderer<TileEntityVulc
 			float rotato = 0, rollers = 0, cloth = 0;
 			float lowered1 = 0, lowered2 = 0, open1 = 0, open2 = 0, heating1 = 0, heating2 = 0;
 			ResourceLocation resIn = null, resOut = null;
-
-			//lowered2=Math.abs((((te.getWorld().getTotalWorldTime()%40f+partialTicks)/40f)-0.5f)/0.5f);//((te.getWorld().getTotalWorldTime()%25f+partialTicks)/25f);
-			//open2 = 0;
 
 			if(te.hasWorld())
 			{
@@ -235,8 +232,6 @@ public class VulcanizerRenderer extends TileEntitySpecialRenderer<TileEntityVulc
 				mod.rotateAngleZ = 0;
 				mod.render();
 			}
-			//renderCloth(0, false, null, null);
-			//renderCloth((te.getWorld().getTotalWorldTime()%80f+partialTicks)/80f,VulcanizerRecipe.TEXTURE_LATEX, VulcanizerRecipe.TEXTURE_RUBBER);//resIn,resOut);
 
 			GlStateManager.translate(1.0625f, 0, 1.3125f);
 

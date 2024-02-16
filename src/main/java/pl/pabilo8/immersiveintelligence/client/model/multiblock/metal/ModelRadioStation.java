@@ -3,7 +3,7 @@ package pl.pabilo8.immersiveintelligence.client.model.multiblock.metal;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumFacing;
 import pl.pabilo8.immersiveintelligence.client.model.ModelIIBase;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
 
 /**
  * @author Pabilo8
@@ -310,7 +310,7 @@ public class ModelRadioStation extends ModelIIBase
 			case WEST:
 			{
 				if(!mirrored)
-				GlStateManager.rotate(180F, 0F, 1F, 0F);
+					GlStateManager.rotate(180F, 0F, 1F, 0F);
 				GlStateManager.translate(mirrored?1: -2f, -2f, mirrored?-1f: 1f);
 			}
 			break;

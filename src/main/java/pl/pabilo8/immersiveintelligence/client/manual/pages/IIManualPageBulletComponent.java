@@ -9,10 +9,10 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import pl.pabilo8.immersiveintelligence.api.Utils;
-import pl.pabilo8.immersiveintelligence.api.bullets.BulletRegistry.EnumComponentRole;
-import pl.pabilo8.immersiveintelligence.api.bullets.IBulletComponent;
-import pl.pabilo8.immersiveintelligence.common.CommonProxy;
+import pl.pabilo8.immersiveintelligence.common.IIUtils;
+import pl.pabilo8.immersiveintelligence.api.bullets.AmmoRegistry.EnumComponentRole;
+import pl.pabilo8.immersiveintelligence.api.bullets.IAmmoComponent;
+import pl.pabilo8.immersiveintelligence.common.util.IIReference;
 
 import java.util.List;
 import java.util.Locale;
@@ -31,8 +31,7 @@ public class IIManualPageBulletComponent extends IIManualPages
 	EnumComponentRole type;
 	float density;
 
-
-	public IIManualPageBulletComponent(ManualInstance manual, IBulletComponent component)
+	public IIManualPageBulletComponent(ManualInstance manual, IAmmoComponent component)
 	{
 		this(manual, component.getName(), component.getMaterial().getExampleStack(), component.getRole(), component.getDensity());
 	}
@@ -59,7 +58,7 @@ public class IIManualPageBulletComponent extends IIManualPages
 			this.localizedLore = manual.formatText(text+".lore");
 			this.localizedName = manual.formatText(text);
 
-			localizedType = I18n.format(CommonProxy.DESCRIPTION_KEY+"bullet_type."+type.getName());
+			localizedType = I18n.format(IIReference.DESCRIPTION_KEY+"bullet_type."+type.getName());
 
 			this.localizedText = addLinks(manual, gui, this.localizedText, x, y+60, 60, pageButtons);
 			if(this.localizedText==null)
@@ -72,7 +71,7 @@ public class IIManualPageBulletComponent extends IIManualPages
 	public void renderPage(GuiManual gui, int x, int y, int mx, int my)
 	{
 		if(localizedName!=null&&!localizedName.isEmpty())
-			ManualUtils.drawSplitString(manual.fontRenderer, TextFormatting.BOLD.toString()+TextFormatting.UNDERLINE.toString()+localizedName, x+40, y, 90, manual.getTextColour());
+			ManualUtils.drawSplitString(manual.fontRenderer, TextFormatting.BOLD.toString()+TextFormatting.UNDERLINE+localizedName, x+40, y, 90, manual.getTextColour());
 
 		if(localizedLore!=null&&!localizedLore.isEmpty())
 			ManualUtils.drawSplitString(manual.fontRenderer, TextFormatting.ITALIC+localizedLore, x+40, y+10, 90, manual.getTextColour());
@@ -93,7 +92,7 @@ public class IIManualPageBulletComponent extends IIManualPages
 		ManualUtils.renderItem().renderItemAndEffectIntoGUI(stack, x/2, (y+4)/2);
 		GlStateManager.popMatrix();
 
-		if(Utils.isPointInRectangle(x+4, y, x+36, y+32, mx, my))
+		if(IIUtils.isPointInRectangle(x+4, y, x+36, y+32, mx, my))
 			gui.renderToolTip(stack, mx, my);
 		//				manual.fontRenderer.drawSplitString(localizedText, x,y, 120, manual.getTextColour());
 	}

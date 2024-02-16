@@ -5,10 +5,10 @@ import net.minecraft.util.math.MathHelper;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
 import pl.pabilo8.immersiveintelligence.client.model.ModelIIBase;
 import pl.pabilo8.immersiveintelligence.client.render.MachinegunRenderer;
-import pl.pabilo8.immersiveintelligence.client.tmt.Coord2D;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
-import pl.pabilo8.immersiveintelligence.client.tmt.Shape2D;
-import pl.pabilo8.immersiveintelligence.client.tmt.TmtNamedBoxGroup;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.Coord2D;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.Shape2D;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.TmtNamedBoxGroup;
 
 /**
  * Created by Pabilo8 on 07-06-2019.
@@ -26,7 +26,7 @@ public class ModelMachinegun extends ModelIIBase
 	ModelRendererTurbo[] tripodBaseModel, tripodLeg1Model, tripodLeg2Model, tripodLeg3Model;
 	public TmtNamedBoxGroup heavyBarrelBox, waterCoolingBox, secondMagazineMainBox, secondMagazineMagBox, beltFedLoaderBox, scopeBox, infraredScopeBox, hastyBipodBox, preciseBipodBox, shieldBox, baubleBox, tripodBox;
 
-	private static String texture = ImmersiveIntelligence.MODID+":textures/items/weapons/machinegun.png";
+	private static final String texture = ImmersiveIntelligence.MODID+":textures/items/weapons/machinegun.png";
 
 	public ModelMachinegun() //Same as Filename
 	{

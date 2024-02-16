@@ -121,10 +121,10 @@ public class ModelMeasuringCup extends ModelAbstractItem
 	}
 
 	/*
- * (non-Javadoc)
- *
- * @see net.minecraftforge.client.model.IModel#getDependencies()
- */
+	 * (non-Javadoc)
+	 *
+	 * @see net.minecraftforge.client.model.IModel#getDependencies()
+	 */
 	@Override
 	public Collection<ResourceLocation> getDependencies()
 	{
@@ -190,7 +190,7 @@ public class ModelMeasuringCup extends ModelAbstractItem
 		return new ModelMeasuringCup(fluid);
 	}
 
-	public enum CustomModelLoader implements ICustomModelLoader
+	public enum MeasuringCupModelLoader implements ICustomModelLoader
 	{
 		INSTANCE;
 
@@ -209,7 +209,7 @@ public class ModelMeasuringCup extends ModelAbstractItem
 		@Override
 		public void onResourceManagerReload(IResourceManager resourceManager)
 		{
-			// no need to clear cache since we create a new model instance
+			// no need to clear cache since we create a new model INSTANCE
 		}
 	}
 
@@ -245,14 +245,7 @@ public class ModelMeasuringCup extends ModelAbstractItem
 			{
 				IModel parent = model.parent.process(ImmutableMap.of("fluid", name));
 				Function<ResourceLocation, TextureAtlasSprite> textureGetter;
-				textureGetter = new Function<ResourceLocation, TextureAtlasSprite>()
-				{
-					@Override
-					public TextureAtlasSprite apply(ResourceLocation location)
-					{
-						return ClientUtils.mc().getTextureMapBlocks().getAtlasSprite(location.toString());
-					}
-				};
+				textureGetter = location -> ClientUtils.mc().getTextureMapBlocks().getAtlasSprite(location.toString());
 				IBakedModel bakedModel = parent.bake(new SimpleModelState(model.transforms), model.format,
 						textureGetter);
 				model.cache.put(name, bakedModel);

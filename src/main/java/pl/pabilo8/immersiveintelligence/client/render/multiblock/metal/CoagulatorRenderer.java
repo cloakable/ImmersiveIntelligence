@@ -1,7 +1,5 @@
 package pl.pabilo8.immersiveintelligence.client.render.multiblock.metal;
 
-import blusunrize.immersiveengineering.api.tool.ConveyorHandler;
-import blusunrize.immersiveengineering.api.tool.ConveyorHandler.IConveyorBelt;
 import blusunrize.immersiveengineering.client.ClientUtils;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,20 +11,20 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
-import pl.pabilo8.immersiveintelligence.Config.IIConfig.Machines.Coagulator;
-import pl.pabilo8.immersiveintelligence.api.Utils;
+import pl.pabilo8.immersiveintelligence.common.IIConfigHandler.IIConfig.Machines.Coagulator;
+import pl.pabilo8.immersiveintelligence.client.IIClientUtils;
 import pl.pabilo8.immersiveintelligence.api.crafting.CoagulatorRecipe;
 import pl.pabilo8.immersiveintelligence.client.model.metal_device.ModelCraneElectric;
 import pl.pabilo8.immersiveintelligence.client.model.multiblock.metal.ModelCoagulator;
 import pl.pabilo8.immersiveintelligence.client.render.IReloadableModelContainer;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
-import pl.pabilo8.immersiveintelligence.common.blocks.multiblocks.metal.tileentities.second.TileEntityCoagulator;
-import pl.pabilo8.immersiveintelligence.common.blocks.multiblocks.metal.tileentities.second.TileEntityCoagulator.CraneAnimation;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.common.block.multiblock.metal_multiblock1.tileentity.TileEntityCoagulator;
+import pl.pabilo8.immersiveintelligence.common.block.multiblock.metal_multiblock1.tileentity.TileEntityCoagulator.CraneAnimation;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
-import static pl.pabilo8.immersiveintelligence.api.Utils.drawRope;
+import static pl.pabilo8.immersiveintelligence.client.IIClientUtils.drawRope;
 
 /**
  * @author Pabilo8
@@ -39,14 +37,13 @@ public class CoagulatorRenderer extends TileEntitySpecialRenderer<TileEntityCoag
 	private static ModelCoagulator model;
 	private static ModelCoagulator modelFlipped;
 	private static ModelCraneElectric modelCrane;
-	private static IConveyorBelt con;
 
 	@Override
 	public void render(@Nullable TileEntityCoagulator te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
 	{
 		if(te!=null&&!te.isDummy())
 		{
-			Utils.bindTexture(TEXTURE);
+			IIClientUtils.bindTexture(TEXTURE);
 			GlStateManager.pushMatrix();
 			GlStateManager.translate((float)x, (float)y, (float)z);
 			GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -223,7 +220,7 @@ public class CoagulatorRenderer extends TileEntitySpecialRenderer<TileEntityCoag
 							() -> {
 							}:
 							() -> {
-								Utils.bindTexture(TEXTURE);
+								IIClientUtils.bindTexture(TEXTURE);
 								GlStateManager.translate(0, -0.125f+(bh*-0.25f), bh*0.25);
 								GlStateManager.rotate(180f, 0, 1, 0);
 								for(ModelRendererTurbo mod : modelFlipped.bucketModel)
@@ -316,7 +313,7 @@ public class CoagulatorRenderer extends TileEntitySpecialRenderer<TileEntityCoag
 			GlStateManager.rotate(-7.5f, 1, 0, 0);
 			GlStateManager.scale(0.23, 0.23, 0.23);
 			GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-			Utils.bindTexture(TEXTURE);
+			IIClientUtils.bindTexture(TEXTURE);
 
 			// TODO: 31.10.2021 actually render
 			for(ModelRendererTurbo mod : model.baseModel)
@@ -362,7 +359,7 @@ public class CoagulatorRenderer extends TileEntitySpecialRenderer<TileEntityCoag
 		}
 		drawFluidStream(fs, fluidProgress);
 
-		Utils.bindTexture(TEXTURE);
+		IIClientUtils.bindTexture(TEXTURE);
 		GlStateManager.popMatrix();
 
 		GlStateManager.rotate((rightSide^mirrored?-95: 95)*valveProgress, 0, 0, 1);
@@ -388,7 +385,7 @@ public class CoagulatorRenderer extends TileEntitySpecialRenderer<TileEntityCoag
 
 			GlStateManager.rotate(-90, 0, 0, 1);
 			GlStateManager.translate(-6, 0, 0);
-			Utils.drawFluidBlock(fs, true, 0, -1-(v*4), 0, 6, 16-(v*2), 6, true);
+			IIClientUtils.drawFluidBlock(fs, true, 0, -1-(v*4), 0, 6, 16-(v*2), 6, true);
 
 			GlStateManager.popMatrix();
 			GlStateManager.translate(-4, -1, 0.05);
@@ -444,7 +441,6 @@ public class CoagulatorRenderer extends TileEntitySpecialRenderer<TileEntityCoag
 		modelFlipped = new ModelCoagulator();
 
 		modelCrane = new ModelCraneElectric();
-		con = ConveyorHandler.getConveyor(new ResourceLocation("immersiveengineering:conveyor"), null);
 	}
 
 

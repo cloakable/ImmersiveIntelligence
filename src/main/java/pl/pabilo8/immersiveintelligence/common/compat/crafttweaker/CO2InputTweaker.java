@@ -6,8 +6,8 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import net.minecraft.tileentity.TileEntity;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
-import pl.pabilo8.immersiveintelligence.common.blocks.metal.TileEntityCO2Filter;
-import pl.pabilo8.immersiveintelligence.common.blocks.metal.TileEntityCO2Filter.CO2Handler;
+import pl.pabilo8.immersiveintelligence.common.block.metal_device.tileentity.TileEntityCO2Filter;
+import pl.pabilo8.immersiveintelligence.common.block.metal_device.tileentity.TileEntityCO2Filter.CO2Handler;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -80,18 +80,13 @@ public class CO2InputTweaker
 			if(pos.contains(c.cast(tile).pos))
 				return 0;
 
-			TileEntityMultiblockMetal machine = c.cast(c.cast(tile).master());
+			TileEntityMultiblockMetal<?,?> machine = c.cast(c.cast(tile).master());
 			if(machine==null)
 				return 0;
 			int i = 0;
-			for(Object p : machine.processQueue)
-			{
-				assert p instanceof MultiblockProcess;
-				MultiblockProcess process = ((MultiblockProcess)p);
-				if(process.canProcess(machine)&&process.processTick%time==0)
+			for(MultiblockProcess<?> p : machine.processQueue)
+				if(p.canProcess(machine)&&p.processTick%time==0)
 					i += amount;
-
-			}
 			return i;
 		}
 	}

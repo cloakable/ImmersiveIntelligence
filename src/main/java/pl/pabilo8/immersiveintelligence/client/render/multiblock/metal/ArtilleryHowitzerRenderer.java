@@ -9,23 +9,26 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.MathHelper;
-import pl.pabilo8.immersiveintelligence.Config.IIConfig.Machines.ArtilleryHowitzer;
+import net.minecraft.util.math.Vec3d;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
-import pl.pabilo8.immersiveintelligence.api.Utils;
-import pl.pabilo8.immersiveintelligence.api.bullets.BulletRegistry;
-import pl.pabilo8.immersiveintelligence.client.animation.*;
-import pl.pabilo8.immersiveintelligence.client.animation.AMTBullet.BulletState;
-import pl.pabilo8.immersiveintelligence.client.animation.IIAnimation.IIAnimationGroup;
-import pl.pabilo8.immersiveintelligence.client.render.IITileRenderer;
+import pl.pabilo8.immersiveintelligence.api.bullets.AmmoRegistry;
+import pl.pabilo8.immersiveintelligence.client.fx.particles.ParticleGunfire;
+import pl.pabilo8.immersiveintelligence.client.render.IIMultiblockRenderer;
+import pl.pabilo8.immersiveintelligence.client.render.IITileRenderer.RegisteredTileRenderer;
+import pl.pabilo8.immersiveintelligence.client.util.amt.*;
+import pl.pabilo8.immersiveintelligence.client.util.amt.AMTBullet.BulletState;
+import pl.pabilo8.immersiveintelligence.client.util.amt.IIAnimation.IIAnimationGroup;
+import pl.pabilo8.immersiveintelligence.common.IIConfigHandler.IIConfig.Machines.ArtilleryHowitzer;
 import pl.pabilo8.immersiveintelligence.common.IIContent;
-import pl.pabilo8.immersiveintelligence.common.blocks.multiblocks.metal.tileentities.first.TileEntityArtilleryHowitzer;
-import pl.pabilo8.immersiveintelligence.common.blocks.multiblocks.metal.tileentities.first.TileEntityArtilleryHowitzer.ArtilleryHowitzerAnimation;
+import pl.pabilo8.immersiveintelligence.common.block.multiblock.metal_multiblock0.tileentity.TileEntityArtilleryHowitzer;
+import pl.pabilo8.immersiveintelligence.common.block.multiblock.metal_multiblock0.tileentity.TileEntityArtilleryHowitzer.ArtilleryHowitzerAnimation;
 
 /**
  * @author Pabilo8
  * @since 29.07.2022
  */
-public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtilleryHowitzer>
+@RegisteredTileRenderer(name = "artillery_howitzer", clazz = TileEntityArtilleryHowitzer.class)
+public class ArtilleryHowitzerRenderer extends IIMultiblockRenderer<TileEntityArtilleryHowitzer>
 {
 	private AMT[] model = null, allParts = null;
 	//animations
@@ -42,13 +45,7 @@ public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtiller
 	private AMT gunYaw, gunPitch;
 
 	@Override
-	protected boolean shouldNotRender(TileEntityArtilleryHowitzer te)
-	{
-		return te==null||te.isDummy();
-	}
-
-	@Override
-	public void draw(TileEntityArtilleryHowitzer te, BufferBuilder buf, float partialTicks, Tessellator tes)
+	public void drawAnimated(TileEntityArtilleryHowitzer te, BufferBuilder buf, float partialTicks, Tessellator tes)
 	{
 		applyStandardRotation(te.facing);
 		GlStateManager.translate(0, 0, -0.5);
@@ -75,7 +72,7 @@ public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtiller
 		//calculated before animations, so animations can modify it
 		float pDiff = te.plannedPitch-te.turretPitch, yDiff = MathHelper.wrapDegrees(360+te.plannedYaw-te.turretYaw);
 		float turretYaw = te.turretYaw+Math.signum(yDiff)*MathHelper.clamp(Math.abs(yDiff)*partialTicks, 0, ArtilleryHowitzer.rotateSpeed);
-		float turretPitch = te.turretPitch+(Math.signum(pDiff)*MathHelper.clamp(Math.abs(yDiff)*partialTicks, 0, ArtilleryHowitzer.rotateSpeed));
+		float turretPitch = te.turretPitch+Math.signum(pDiff)*MathHelper.clamp(Math.abs(yDiff)*partialTicks, 0, ArtilleryHowitzer.rotateSpeed);
 
 		//conveyor animation
 		float conveyorAnim = IIAnimationUtils.getAnimationProgress(te.shellConveyorTime, ArtilleryHowitzer.conveyorTime,
@@ -106,9 +103,6 @@ public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtiller
 				canOperateActive&&te.animation!=ArtilleryHowitzerAnimation.STOP, false, 1f, 0f, partialTicks);
 		switch(te.animation)
 		{
-			case STOP:
-			case HIDE:
-				break;
 			case LOAD1:
 			case LOAD2:
 			case LOAD3:
@@ -151,17 +145,19 @@ public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtiller
 
 				// TODO: 11.08.2022 add parameter handling to animation system and remove this mess
 				if(animationProgress < 0.1f)
-					turretPitch = (-90+turretPitch)*Math.min(animationProgress/0.1f, 1f);
+					turretPitch = lerp(turretPitch, 90, Math.min(animationProgress/0.1f, 1f));
 				else if(animationProgress > 0.9f)
-					turretPitch = (-90+turretPitch)*(1f-Math.min((animationProgress-0.9f)/0.1f, 1f));
+					turretPitch = lerp(90, turretPitch, (animationProgress-0.9f)/0.1f);
 				else if(animationProgress > secondMarker&&animationProgress < firstMarker)
-					turretPitch = (-90+turretPitch)*(1f-(float)Math.min((animationProgress-(secondMarker))/dist, 1f));
+					turretPitch = lerp(90, turretPitch, (float)((animationProgress-secondMarker)/dist));
 				else if(animationProgress > firstMarker2&&animationProgress < secondMarker2)
-					turretPitch = (-90+turretPitch)*(float)Math.min((animationProgress-(firstMarker2))/dist2, 1f);
+					turretPitch = lerp(turretPitch, 90, (float)((animationProgress-firstMarker2)/dist2));
 				else if(animationProgress < secondMarker||animationProgress > secondMarker2)
-					turretPitch = -90;
+					turretPitch = 90;
 			}
 			break;
+			case STOP:
+			case HIDE:
 			case AIM:
 			default:
 				break;
@@ -169,7 +165,7 @@ public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtiller
 
 		//set gun pitch and yaw
 		IIAnimationUtils.setModelRotation(gunYaw, 0, (te.mirrored?-1: 1)*(te.facing.getHorizontalAngle()-turretYaw), 0);
-		IIAnimationUtils.setModelRotation(gunPitch, turretPitch, 0, 0);
+		IIAnimationUtils.setModelRotation(gunPitch, -turretPitch, 0, 0);
 
 		//flipping
 		if(te.mirrored)
@@ -181,6 +177,23 @@ public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtiller
 
 		if(te.mirrored)
 			unMirrorRender();
+	}
+
+	@Override
+	public void drawSimple(BufferBuilder buf, float partialTicks, Tessellator tes)
+	{
+		GlStateManager.translate(0, 0, -0.5);
+
+		//defaultize
+		for(AMT mod : allParts)
+			mod.defaultize();
+
+		//apply default animation (for inserter angle)
+		animationDefault.apply(0);
+
+		//render
+		for(AMT mod : model)
+			mod.render(tes, buf);
 	}
 
 	private void setupShellDisplay(TileEntityArtilleryHowitzer te, BulletState state, int slot)
@@ -239,7 +252,16 @@ public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtiller
 
 						shellLoaded = createDefaultShellAMT(header, "shell_loaded"),
 						shellEjected = createDefaultShellAMT(header, "shell_hatch"),
-						shellHeld = createDefaultShellAMT(header, "shell_held")
+						shellHeld = createDefaultShellAMT(header, "shell_held"),
+
+						new AMTParticle("muzzle_flash", header)
+								.setParticle(new ParticleGunfire(
+										null,
+										Vec3d.ZERO,
+										new Vec3d(0, 1, 0),
+										48f
+								)
+						)
 				}
 		);
 		allParts = IIAnimationUtils.getChildrenRecursive(model);
@@ -268,6 +290,7 @@ public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtiller
 	@Override
 	protected void nullifyModels()
 	{
+		super.nullifyModels();
 		model = IIAnimationUtils.disposeOf(model);
 		animationOpen = animationPlatform = null;
 		animationFire = animationLoading = null;
@@ -283,7 +306,7 @@ public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtiller
 
 	private AMTBullet createDefaultShellAMT(IIModelHeader header, String name, String originName)
 	{
-		return new AMTBullet(name, header.getOffset(originName), BulletRegistry.INSTANCE.getModel(IIContent.itemAmmoArtillery));
+		return new AMTBullet(name, header.getOffset(originName), AmmoRegistry.INSTANCE.getModel(IIContent.itemAmmoArtillery));
 	}
 
 	private AMTBullet createShellQueueAMT(boolean in, int id, IIModelHeader header)
@@ -293,5 +316,10 @@ public class ArtilleryHowitzerRenderer extends IITileRenderer<TileEntityArtiller
 				.withState(BulletState.BULLET_UNUSED);
 		shells[(in?0: 6)+id] = mod;
 		return mod;
+	}
+
+	float lerp(float a, float b, float f)
+	{
+		return a*(1.0f-f)+b*f;
 	}
 }

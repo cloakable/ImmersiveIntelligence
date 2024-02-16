@@ -3,9 +3,9 @@ package pl.pabilo8.immersiveintelligence.client.model.multiblock.metal;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumFacing;
 import pl.pabilo8.immersiveintelligence.client.model.ModelIIBase;
-import pl.pabilo8.immersiveintelligence.client.tmt.Coord2D;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
-import pl.pabilo8.immersiveintelligence.client.tmt.Shape2D;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.Coord2D;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.Shape2D;
 
 /**
  * @author Pabilo8
@@ -408,7 +408,7 @@ public class ModelPrintingPress extends ModelIIBase
 
 		if(flipped)
 			for(ModelRendererTurbo mod : rollerModel)
-			mod.rotateAngleY*=-1;
+				mod.rotateAngleY*=-1;
 
 		parts.put("base", baseModel);
 		parts.put("rollerModel", rollerModel);

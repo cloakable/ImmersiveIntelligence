@@ -1,11 +1,8 @@
 package pl.pabilo8.immersiveintelligence.common.compat.jei.gui_handlers;
 
 import mezz.jei.api.gui.IAdvancedGuiHandler;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.recipebook.GuiRecipeBook;
-import pl.pabilo8.immersiveintelligence.client.gui.GuiDataRedstoneInterfaceData;
-import pl.pabilo8.immersiveintelligence.client.gui.GuiDataRedstoneInterfaceRedstone;
-import pl.pabilo8.immersiveintelligence.client.gui.emplacement.GuiEmplacement;
+import pl.pabilo8.immersiveintelligence.client.gui.block.emplacement.GuiEmplacement;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
 import pl.pabilo8.immersiveintelligence.client.model.metal_device.ModelRedstoneBuffer;
-import pl.pabilo8.immersiveintelligence.common.blocks.metal.TileEntityRedstoneBuffer;
+import pl.pabilo8.immersiveintelligence.common.block.data_device.tileentity.TileEntityRedstoneBuffer;
 
 /**
  * @author Pabilo8
@@ -17,7 +17,7 @@ import pl.pabilo8.immersiveintelligence.common.blocks.metal.TileEntityRedstoneBu
 @SideOnly(Side.CLIENT)
 public class RedstoneBufferRenderer extends TileEntitySpecialRenderer<TileEntityRedstoneBuffer>
 {
-	private static ModelRedstoneBuffer model = new ModelRedstoneBuffer();
+	private static final ModelRedstoneBuffer model = new ModelRedstoneBuffer();
 
 	@Override
 	public void render(TileEntityRedstoneBuffer te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)

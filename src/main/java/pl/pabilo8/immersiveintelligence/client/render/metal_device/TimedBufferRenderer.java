@@ -8,8 +8,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
 import pl.pabilo8.immersiveintelligence.client.model.metal_device.ModelTimedBuffer;
-import pl.pabilo8.immersiveintelligence.client.tmt.TmtUtil;
-import pl.pabilo8.immersiveintelligence.common.blocks.metal.TileEntityTimedBuffer;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.TmtUtil;
+import pl.pabilo8.immersiveintelligence.common.block.data_device.tileentity.TileEntityTimedBuffer;
 
 /**
  * @author Pabilo8
@@ -18,7 +18,7 @@ import pl.pabilo8.immersiveintelligence.common.blocks.metal.TileEntityTimedBuffe
 @SideOnly(Side.CLIENT)
 public class TimedBufferRenderer extends TileEntitySpecialRenderer<TileEntityTimedBuffer>
 {
-	private static ModelTimedBuffer model = new ModelTimedBuffer();
+	private static final ModelTimedBuffer model = new ModelTimedBuffer();
 
 	@Override
 	public void render(TileEntityTimedBuffer te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)

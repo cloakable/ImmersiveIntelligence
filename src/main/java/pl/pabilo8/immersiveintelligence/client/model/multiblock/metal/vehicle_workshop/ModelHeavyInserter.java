@@ -4,7 +4,7 @@ import blusunrize.immersiveengineering.client.ClientUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
 import pl.pabilo8.immersiveintelligence.client.model.ModelIIBase;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
 
 /**
  * @author Pabilo8
@@ -326,7 +326,7 @@ public class ModelHeavyInserter extends ModelIIBase
 		for(ModelRendererTurbo mod : inserterLowerArmModel)
 			mod.render(0.0625f);
 
-		GlStateManager.translate(0f, 16F/16f, -0.0625f);
+		GlStateManager.translate(0f, 1.0f, -0.0625f);
 		GlStateManager.rotate(135-(95f*progress), 1, 0, 0);
 		GlStateManager.translate(0f, 0.0625f, 0.03125f);
 

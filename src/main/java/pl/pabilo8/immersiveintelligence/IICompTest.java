@@ -7,11 +7,9 @@ import pl.pabilo8.immersiveintelligence.api.data.pol.POLScript;
 import pl.pabilo8.immersiveintelligence.api.data.pol.POLTerminal;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +28,7 @@ public class IICompTest
 
 	public static void main(String[] args)
 	{
-		execute(readFile("trigonometry"));
+		execute(readFile("loading_bar"));
 	}
 
 	/**
@@ -47,8 +45,7 @@ public class IICompTest
 			MEMORY.putScript(name, POLScript.prepareScript(c));
 			reader.close();
 			return name;
-		}
-		catch(IOException ignored)
+		} catch(IOException ignored)
 		{
 
 		}
@@ -85,13 +82,13 @@ public class IICompTest
 		@Override
 		public void error(String text)
 		{
-			System.out.println(text);
+			System.out.println(name+" "+text);
 		}
 
 		@Override
 		public void type(String text)
 		{
-			System.out.println(text);
+			System.out.println(name+" "+text);
 		}
 
 		@Override
@@ -112,8 +109,7 @@ public class IICompTest
 			try
 			{
 				Thread.sleep(value*20L);
-			}
-			catch(InterruptedException ignored)
+			} catch(InterruptedException ignored)
 			{
 			}
 		}

@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
 import pl.pabilo8.immersiveintelligence.client.model.item.ModelTachometer;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
 
 /**
  * @author Pabilo8
@@ -18,7 +18,7 @@ public class TachometerItemStackRenderer extends TileEntityItemStackRenderer
 {
 	public static TachometerItemStackRenderer instance = new TachometerItemStackRenderer();
 	@SideOnly(Side.CLIENT)
-	private static ModelTachometer model = new ModelTachometer();
+	private static final ModelTachometer model = new ModelTachometer();
 	private static final String TEXTURE = ImmersiveIntelligence.MODID+":textures/items/tools/tachometer.png";
 
 	@Override

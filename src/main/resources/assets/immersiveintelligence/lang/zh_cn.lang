@@ -330,7 +330,7 @@ tile.immersiveintelligence.metal_multiblock.artillery_howitzer.name=榴弹炮
 tile.immersiveintelligence.metal_multiblock.ballistic_computer.name=弹道计算机
 tile.immersiveintelligence.metal_multiblock.missile_silo.name=导弹发射井
 tile.immersiveintelligence.metal_multiblock.ammunition_factory.name=弹药厂
-tile.immersiveintelligence.metal_multiblock.conveyor_scanner.name=传送带扫描仪
+tile.immersiveintelligence.metal_multiblock.scanning_conveyor.name=传送带扫描仪
 tile.immersiveintelligence.metal_multiblock.packer.name=封装机
 tile.immersiveintelligence.metal_multiblock.minecart_packer.name=矿车封装机
 tile.immersiveintelligence.metal_multiblock.unpacker.name=卸载器
@@ -437,12 +437,13 @@ desc.immersiveintelligence.infrared_disabled=§c红外§r视觉关闭！
 desc.immersiveintelligence.assembly_scheme.used_to_create=被用于合成: %s
 desc.immersiveintelligence.assembly_scheme.items_created=Items Created: %s
 
-desc.immersiveengineering.info.holdControl=§4按住Ctrl§r
-desc.immersiveengineering.info.holdControlForInfo=§c按住Ctrl显示更多信息§r
+desc.immersiveintelligence.info.holdControl=按住[Ctrl]
+desc.immersiveintelligence.info.holdShift=按住[Shift]
+desc.immersiveintelligence.info.holdAlt=按住[Alt]
+desc.immersiveintelligence.info.holdTab=按住[Tab]
 
-
-desc.immersiveintelligence.assembly_scheme.info_hold1=§6按住Shift§r - 所需原料
-desc.immersiveintelligence.assembly_scheme.info_hold2=§4按住Ctrl§r - 所需机械臂
+desc.immersiveintelligence.assembly_scheme.info_hold1=%s - 所需原料
+desc.immersiveintelligence.assembly_scheme.info_hold2=%s - 所需机械臂
 desc.immersiveintelligence.assembly_scheme.materials=所需原料：
 desc.immersiveintelligence.assembly_scheme.tools=所需机械臂：
 
@@ -477,7 +478,7 @@ desc.immersiveintelligence.bullet_type.flare=照明弹
 desc.immersiveintelligence.bullet_type.chemical=化学弹
 desc.immersiveintelligence.bullet_type.special=特种弹
 
-desc.immersiveintelligence.bullets.core=配备：%s
+desc.immersiveintelligence.bullets.core=配备：%1$s bCal %2$s %3$s
 desc.immersiveintelligence.bullets.mass=质量：%s
 desc.immersiveintelligence.bullets.caliber=口径：%s bCal
 
@@ -497,7 +498,7 @@ info.immersiveintelligence.current_frequency=当前频率：%s
 
 info.immersiveintelligence.requires_advanced_hammer=高级的工程需要高级的工具，你需要一个电动锤来制造这台机器
 
-info.immersiveintelligence.gear_durability=耐久：%1$s / %2$s
+info.immersiveintelligence.tool_durability=耐久：%1$s / %2$s
 
 info.immersiveintelligence.yaw=偏角：%s
 
@@ -791,9 +792,9 @@ ie.manual.entry.redstone_interface0=红石接口是连接旧的红石系统和�
 ie.manual.entry.redstone_interface1=这台机器由一些线圈，一堆钢板和几根电子管组成，但最重要的是数据输入端口，需要在这个端口上放置一个继电器和一个内置的红石接线器，你可以在上面连接一根线圈。在操作界面中有两个部分，从数据信号转为红石信号或反之。添加条目后，必须指定变量字母和相应的红石颜色。
 
 #Reference to a meme
-ie.manual.entry.conveyor_scanner.name=传送带扫描仪
-ie.manual.entry.conveyor_scanner.subtext=拿着摄像机！
-ie.manual.entry.conveyor_scanner0=传送带扫描仪是由传送带、带特殊镜头的照相机和处理信息的电子装置组成的装置。一个物品通过传送带扫描仪，它的属性被读取并发送到数据包内的物品数据类型变量's'。这台机器需要消耗电力。用工程师锤右击传送带来完成建造。
+ie.manual.entry.scanning_conveyor.name=传送带扫描仪
+ie.manual.entry.scanning_conveyor.subtext=拿着摄像机！
+ie.manual.entry.scanning_conveyor0=传送带扫描仪是由传送带、带特殊镜头的照相机和处理信息的电子装置组成的装置。一个物品通过传送带扫描仪，它的属性被读取并发送到数据包内的物品数据类型变量's'。这台机器需要消耗电力。用工程师锤右击传送带来完成建造。
 
 #Reference to Factorio
 ie.manual.entry.inserters.name=物品输入器

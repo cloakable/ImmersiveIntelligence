@@ -1,21 +1,15 @@
 package pl.pabilo8.immersiveintelligence.common.entity.hans.tasks.hand_weapon;
 
-import blusunrize.immersiveengineering.common.IEContent;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import pl.pabilo8.immersiveintelligence.api.Utils;
+import pl.pabilo8.immersiveintelligence.common.IIUtils;
 import pl.pabilo8.immersiveintelligence.common.IIContent;
 import pl.pabilo8.immersiveintelligence.common.entity.EntityHans;
-import pl.pabilo8.immersiveintelligence.common.entity.bullets.EntityBullet;
-import pl.pabilo8.immersiveintelligence.common.items.ammunition.ItemIIAmmoGrenade;
-
-import java.util.List;
+import pl.pabilo8.immersiveintelligence.common.entity.bullet.EntityBullet;
+import pl.pabilo8.immersiveintelligence.common.item.ammo.ItemIIAmmoGrenade;
 
 /**
  * @author Pabilo8
@@ -125,20 +119,14 @@ public class AIHansGrenade extends AIHansHandWeapon
 
 	}
 
-	/*@Override
-	protected boolean canShootEntity(EntityLivingBase entity)
-	{
-		return true;
-	}*/
-
 	@Override
 	protected float calculateBallisticAngle(ItemStack ammo, EntityLivingBase attackTarget)
 	{
 		Vec3d dist = hans.getPositionVector()
 				.addVector(0, (double)hans.getEyeHeight()-0.10000000149011612D, 0)
-				.subtract(Utils.getEntityCenter(attackTarget));
+				.subtract(IIUtils.getEntityCenter(attackTarget));
 
-		return Utils.calculateBallisticAngle(
+		return IIUtils.calculateBallisticAngle(
 				new Vec3d(dist.x, 0, dist.z).distanceTo(Vec3d.ZERO)
 				, dist.y,
 				IIContent.itemGrenade.getDefaultVelocity(),

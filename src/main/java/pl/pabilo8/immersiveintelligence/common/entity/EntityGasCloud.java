@@ -16,7 +16,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
-import pl.pabilo8.immersiveintelligence.api.utils.IGasmask;
+import pl.pabilo8.immersiveintelligence.api.utils.armor.IGasmask;
 import pl.pabilo8.immersiveintelligence.client.fx.ParticleUtils;
 
 import java.util.List;
@@ -29,10 +29,10 @@ public class EntityGasCloud extends Entity
 {
 	private FluidStack fluid;
 	private static final DataParameter<Optional<FluidStack>> dataMarker_fluid = EntityDataManager.createKey(EntityGasCloud.class, IEFluid.OPTIONAL_FLUID_STACK);
-	private static final DataParameter<Float> dataMarker_radius = EntityDataManager.<Float>createKey(EntityGasCloud.class, DataSerializers.FLOAT);
+	private static final DataParameter<Float> dataMarker_radius = EntityDataManager.createKey(EntityGasCloud.class, DataSerializers.FLOAT);
 
-	int duration = 0, maxDuration = 20;
-	float radius = 3f;
+	int duration, maxDuration;
+	float radius;
 
 	public EntityGasCloud(World worldIn)
 	{
@@ -65,7 +65,7 @@ public class EntityGasCloud extends Entity
 	@Override
 	public void onUpdate()
 	{
-		move(MoverType.SELF,0.01f,0,0.01f);
+		move(MoverType.SELF, 0.01f, 0, 0.01f);
 		super.onUpdate();
 		if(this.fluid==null&&this.world.isRemote)
 		{
@@ -103,7 +103,7 @@ public class EntityGasCloud extends Entity
 				setDead();
 		}
 		else if(ticksExisted%20==0)
-			ParticleUtils.spawnGasCloud(posX, posY+1, posZ, radius, fluid.getFluid());
+			ParticleUtils.spawnGasCloud(getPositionVector().addVector(0, 1, 0), radius, fluid.getFluid());
 	}
 
 	@Override

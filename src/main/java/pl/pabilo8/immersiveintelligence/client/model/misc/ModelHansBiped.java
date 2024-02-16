@@ -6,10 +6,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
-import pl.pabilo8.immersiveintelligence.api.Utils;
+import pl.pabilo8.immersiveintelligence.common.IIUtils;
 import pl.pabilo8.immersiveintelligence.common.entity.EntityHans;
 import pl.pabilo8.immersiveintelligence.common.entity.hans.HansAnimations.HansArmAnimation;
 import pl.pabilo8.immersiveintelligence.common.entity.hans.HansAnimations.HansLegAnimation;
+
+import java.util.Arrays;
 
 /**
  * @author Pabilo8
@@ -265,7 +267,7 @@ public class ModelHansBiped extends ModelPlayer
 				final float kickLeg = 0.25f;
 				final float landLeg = -0.55f;
 
-				bipedLeftHand.rotateAngleX = Utils.clampedLerp3Par(kickLeg, landLeg-v2*0.125f, kickLeg, v1);
+				bipedLeftHand.rotateAngleX = IIUtils.clampedLerp3Par(kickLeg, landLeg-v2*0.125f, kickLeg, v1);
 
 			}
 			break;
@@ -367,11 +369,11 @@ public class ModelHansBiped extends ModelPlayer
 				final float landLeg = -1.57f-0.25f;
 				final float kickFoot = 1.57f+0.35f;
 
-				bipedLeftLeg.rotateAngleX = Utils.clampedLerp3Par(kickLeg, landLeg-v2*0.125f, kickLeg, v1);
-				bipedRightLeg.rotateAngleX = Utils.clampedLerp3Par(kickLeg, landLeg-v1*0.125f, kickLeg, v2);
+				bipedLeftLeg.rotateAngleX = IIUtils.clampedLerp3Par(kickLeg, landLeg-v2*0.125f, kickLeg, v1);
+				bipedRightLeg.rotateAngleX = IIUtils.clampedLerp3Par(kickLeg, landLeg-v1*0.125f, kickLeg, v2);
 
-				bipedLeftFoot.rotateAngleX = Utils.clampedLerp3Par(kickFoot, -0.25f, kickFoot, v1);
-				bipedRightFoot.rotateAngleX = Utils.clampedLerp3Par(kickFoot, -0.25f, kickFoot, v2);
+				bipedLeftFoot.rotateAngleX = IIUtils.clampedLerp3Par(kickFoot, -0.25f, kickFoot, v1);
+				bipedRightFoot.rotateAngleX = IIUtils.clampedLerp3Par(kickFoot, -0.25f, kickFoot, v2);
 
 				bipedBody.rotateAngleX = -0.1f;
 
@@ -450,9 +452,9 @@ public class ModelHansBiped extends ModelPlayer
 
 		public static final int SIDE_ALL = SIDE_LEFT|SIDE_RIGHT|SIDE_TOP|SIDE_BOTTOM|SIDE_FRONT|SIDE_BACK;
 
-		private PositionTextureVertex[] vertexPositions;
+		private final PositionTextureVertex[] vertexPositions;
 
-		private TexturedQuad[] quadList;
+		private final TexturedQuad[] quadList;
 
 		private final float posX1;
 
@@ -517,12 +519,7 @@ public class ModelHansBiped extends ModelPlayer
 			quadList[4] = new TexturedQuad(new PositionTextureVertex[]{v100, v000, v010, v110}, u+depth, v+depth, u+depth+width, v+depth+height, model.textureWidth, model.textureHeight);
 			quadList[5] = new TexturedQuad(new PositionTextureVertex[]{v001, v101, v111, v011}, u+depth+width+depth, v+depth, u+depth+width+depth+width, v+depth+height, model.textureWidth, model.textureHeight);
 			if(model.mirror)
-			{
-				for(int i = 0; i < quadList.length; i++)
-				{
-					quadList[i].flipFace();
-				}
-			}
+				Arrays.stream(quadList).forEach(TexturedQuad::flipFace);
 			setVisibleSides(SIDE_ALL);
 		}
 

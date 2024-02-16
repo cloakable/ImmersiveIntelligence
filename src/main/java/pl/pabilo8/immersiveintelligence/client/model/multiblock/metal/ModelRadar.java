@@ -3,9 +3,9 @@ package pl.pabilo8.immersiveintelligence.client.model.multiblock.metal;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumFacing;
 import pl.pabilo8.immersiveintelligence.client.model.ModelIIBase;
-import pl.pabilo8.immersiveintelligence.client.tmt.Coord2D;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
-import pl.pabilo8.immersiveintelligence.client.tmt.Shape2D;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.Coord2D;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.Shape2D;
 
 /**
  * @author Pabilo8
@@ -1225,7 +1225,7 @@ public class ModelRadar extends ModelIIBase
 				GlStateManager.rotate(90F, 0F, 1F, 0F);
 				GlStateManager.translate(-1f, 0f, 0f);
 				if(mirrored)
-				GlStateManager.translate(0, 0f, 1f);
+					GlStateManager.translate(0, 0f, 1f);
 			}
 			break;
 		}

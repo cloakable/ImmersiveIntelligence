@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
 import pl.pabilo8.immersiveintelligence.client.model.metal_device.ModelSmallDataBuffer;
-import pl.pabilo8.immersiveintelligence.common.blocks.metal.TileEntitySmallDataBuffer;
+import pl.pabilo8.immersiveintelligence.common.block.data_device.tileentity.TileEntitySmallDataBuffer;
 
 /**
  * @author Pabilo8
@@ -17,7 +17,7 @@ import pl.pabilo8.immersiveintelligence.common.blocks.metal.TileEntitySmallDataB
 @SideOnly(Side.CLIENT)
 public class SmallDataBufferRenderer extends TileEntitySpecialRenderer<TileEntitySmallDataBuffer>
 {
-	private static ModelSmallDataBuffer model = new ModelSmallDataBuffer();
+	private static final ModelSmallDataBuffer model = new ModelSmallDataBuffer();
 
 	@Override
 	public void render(TileEntitySmallDataBuffer te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)

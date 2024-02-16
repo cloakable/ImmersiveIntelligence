@@ -7,12 +7,12 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
-import pl.pabilo8.immersiveintelligence.api.utils.ISkycrateMount;
+import pl.pabilo8.immersiveintelligence.api.utils.tools.ISkycrateMount;
 import pl.pabilo8.immersiveintelligence.client.model.multiblock.wooden.ModelSkyCrate;
 import pl.pabilo8.immersiveintelligence.client.model.multiblock.wooden.ModelSkyCrateElectric;
-import pl.pabilo8.immersiveintelligence.client.tmt.TmtUtil;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.TmtUtil;
 import pl.pabilo8.immersiveintelligence.common.entity.EntitySkyCrate;
-import pl.pabilo8.immersiveintelligence.common.items.ItemIISkycrateMount;
+import pl.pabilo8.immersiveintelligence.common.item.ItemIISkycrateMount;
 
 /**
  * @author Pabilo8

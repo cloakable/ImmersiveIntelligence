@@ -10,6 +10,8 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.oredict.OreDictionary;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
 import pl.pabilo8.immersiveintelligence.common.IIContent;
+import pl.pabilo8.immersiveintelligence.common.IILogger;
+import pl.pabilo8.immersiveintelligence.common.item.crafting.material.ItemIIMaterialRod.MaterialsRod;
 import twistedgate.immersiveposts.ImmersivePosts;
 import twistedgate.immersiveposts.common.blocks.BlockPost;
 import twistedgate.immersiveposts.enums.EnumPostMaterial;
@@ -37,24 +39,16 @@ public class ImmersivePostsHelper extends IICompatModule
 	@Override
 	public void preInit()
 	{
-		//IIContent.itemMaterialRod.setMetaUnhidden(2, 3);
-		//OreDictionary.registerOre("stickZinc", new ItemStack(IIContent.itemMaterialRod, 1, 2));
-		//OreDictionary.registerOre("stickPlatinum", new ItemStack(IIContent.itemMaterialRod, 1, 3));
-
 		brassFence = createFence("brass");
 		tungstenFence = createFence("tungsten");
 		zincFence = createFence("zinc");
 		platinumFence = createFence("platinum");
 		duraluminiumFence = createFence("duraluminium");
 
-		OreDictionary.registerOre("fenceBrass", new ItemStack(brassFence));
-		OreDictionary.registerOre("fenceTungsten", new ItemStack(tungstenFence));
-		OreDictionary.registerOre("fenceZinc", new ItemStack(zincFence));
-		OreDictionary.registerOre("fencePlatinum", new ItemStack(platinumFence));
-		OreDictionary.registerOre("fenceDuraluminium", new ItemStack(duraluminiumFence));
-
 		try
 		{
+			IIContent.itemMaterialRod.setMetaUnhidden(MaterialsRod.ZINC, MaterialsRod.PLATINUM);
+			
 			Constructor<EnumPostMaterial> constructor = EnumPostMaterial.class.getDeclaredConstructor(String.class, int.class, String.class, Block.class, boolean.class, boolean.class);
 			constructor.setAccessible(true);
 
@@ -70,7 +64,7 @@ public class ImmersivePostsHelper extends IICompatModule
 			BlockPost platinumPost = createMetalPost(postMatPlatinum);
 			BlockPost duraluminiumPost = createMetalPost(postMatDuraluminium);
 
-			ImmersiveIntelligence.logger.info("It's fine, everything's fine. (no really, don't report it to me or TwistedGate)");
+			IILogger.info("It's fine, everything's fine. (no really, don't report it to me or TwistedGate)");
 
 			// TODO: 28.07.2021 either poke Twisted about adding an api (on 1.12? are you serious?) or do the asm
 			/*
@@ -89,14 +83,18 @@ public class ImmersivePostsHelper extends IICompatModule
 		}
 		catch(NoSuchMethodException e) // |IOException
 		{
-			ImmersiveIntelligence.logger.info("Couldn't add Immersive Posts Compat :<");
+			IILogger.info("Couldn't add Immersive Posts Compat :<");
 		}
 	}
 
 	@Override
 	public void registerRecipes()
 	{
-
+		OreDictionary.registerOre("fenceBrass", new ItemStack(brassFence));
+		OreDictionary.registerOre("fenceTungsten", new ItemStack(tungstenFence));
+		OreDictionary.registerOre("fenceZinc", new ItemStack(zincFence));
+		OreDictionary.registerOre("fencePlatinum", new ItemStack(platinumFence));
+		OreDictionary.registerOre("fenceDuraluminium", new ItemStack(duraluminiumFence));
 	}
 
 	@Override

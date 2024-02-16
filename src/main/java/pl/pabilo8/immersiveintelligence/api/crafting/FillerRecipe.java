@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
-import pl.pabilo8.immersiveintelligence.api.bullets.IBullet;
+import pl.pabilo8.immersiveintelligence.api.bullets.IAmmo;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -26,12 +26,12 @@ public class FillerRecipe extends MultiblockRecipe
 	public final IngredientStack itemInput;
 	public final ItemStack itemOutput;
 
-	public static ArrayList<FillerRecipe> recipeList = new ArrayList();
+	public static ArrayList<FillerRecipe> recipeList = new ArrayList<>();
 	public DustStack dust;
 	int totalProcessTime;
 	int totalProcessEnergy;
 	//for bullets only
-	IBullet bullet = null;
+	IAmmo bullet = null;
 
 	public FillerRecipe(ItemStack itemOutput, Object itemInput, DustStack dust, int time, int energy)
 	{
@@ -40,6 +40,9 @@ public class FillerRecipe extends MultiblockRecipe
 
 		this.inputList = Lists.newArrayList(this.itemInput);
 		this.outputList = ListUtils.fromItem(this.itemOutput);
+
+		if(itemOutput.getItem() instanceof IAmmo)
+			bullet = ((IAmmo)itemOutput.getItem());
 
 		this.dust = dust;
 		this.totalProcessTime = time;
@@ -50,12 +53,10 @@ public class FillerRecipe extends MultiblockRecipe
 	{
 		FillerRecipe r = new FillerRecipe(itemOutput, itemInput, dust, time, energy);
 		recipeList.add(r);
-		if(itemOutput.getItem() instanceof IBullet)
-			r.bullet = ((IBullet)itemOutput.getItem());
 		return r;
 	}
 
-	public static <T extends Item & IBullet> FillerRecipe addRecipe(T bulletItem, int time, int energy)
+	public static <T extends Item & IAmmo> FillerRecipe addRecipe(T bulletItem, int time, int energy)
 	{
 		ItemStack casingStack = bulletItem.getCasingStack(1);
 		ItemNBTHelper.setBoolean(casingStack, "ii_FilledCasing", true);
@@ -66,7 +67,7 @@ public class FillerRecipe extends MultiblockRecipe
 
 	public static List<FillerRecipe> removeRecipesForOutput(ItemStack stack)
 	{
-		List<FillerRecipe> list = new ArrayList();
+		List<FillerRecipe> list = new ArrayList<>();
 		Iterator<FillerRecipe> it = recipeList.iterator();
 		while(it.hasNext())
 		{
@@ -141,7 +142,7 @@ public class FillerRecipe extends MultiblockRecipe
 	}
 
 	@Nullable
-	public IBullet getBullet()
+	public IAmmo getBullet()
 	{
 		return this.bullet;
 	}

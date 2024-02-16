@@ -8,23 +8,23 @@ import blusunrize.immersiveengineering.client.models.ModelConveyor;
 import blusunrize.immersiveengineering.common.util.chickenbones.Matrix4;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.CullFace;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import pl.pabilo8.immersiveintelligence.api.Utils;
-import pl.pabilo8.immersiveintelligence.api.bullets.BulletRegistry;
-import pl.pabilo8.immersiveintelligence.api.bullets.IBullet;
+import pl.pabilo8.immersiveintelligence.client.IIClientUtils;
+import pl.pabilo8.immersiveintelligence.api.bullets.AmmoRegistry;
+import pl.pabilo8.immersiveintelligence.api.bullets.IAmmo;
 import pl.pabilo8.immersiveintelligence.client.model.IBulletModel;
 import pl.pabilo8.immersiveintelligence.client.model.metal_device.ModelAdvancedInserter;
 import pl.pabilo8.immersiveintelligence.client.model.metal_device.ModelInserter;
 import pl.pabilo8.immersiveintelligence.client.model.multiblock.metal.ModelAmmunitionWorkshop;
 import pl.pabilo8.immersiveintelligence.client.render.IReloadableModelContainer;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
-import pl.pabilo8.immersiveintelligence.common.blocks.multiblocks.metal.tileentities.second.TileEntityAmmunitionWorkshop;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.common.block.multiblock.metal_multiblock1.tileentity.TileEntityAmmunitionWorkshop;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -44,11 +44,14 @@ public class AmmunitionWorkshopRenderer extends TileEntitySpecialRenderer<TileEn
 	private static ModelAdvancedInserter modelInserterAdvanced;
 
 	@Override
-	public void render(TileEntityAmmunitionWorkshop te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
+	public void render(@Nullable TileEntityAmmunitionWorkshop te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
 	{
-		if(te!=null&&!te.isDummy())
+		if(te!=null)
 		{
-			Utils.bindTexture(TEXTURE);
+			if(te.isDummy())
+				return;
+
+			IIClientUtils.bindTexture(TEXTURE);
 			GlStateManager.pushMatrix();
 			GlStateManager.translate((float)x, (float)y+1, (float)z);
 			GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -65,13 +68,13 @@ public class AmmunitionWorkshopRenderer extends TileEntitySpecialRenderer<TileEn
 			boolean conveyorAmmoRunning = progress < 0.15;
 			float i1Pitch = 35, i1Pitch2 = 135;
 			float i2Pitch = 35, i2Pitch2 = 135;
-			IBullet bullet = null;
+			IAmmo bullet = null;
 			IBulletModel bulletModel = null;
 
-			if(te.effect.getItem() instanceof IBullet)
+			if(te.effect.getItem() instanceof IAmmo)
 			{
-				bullet = (IBullet)te.effect.getItem();
-				bulletModel = BulletRegistry.INSTANCE.registeredModels.get(bullet.getName());
+				bullet = (IAmmo)te.effect.getItem();
+				bulletModel = AmmoRegistry.INSTANCE.registeredModels.get(bullet.getName());
 			}
 
 			if(progress > 0.15&&progress < 0.65)
@@ -210,7 +213,7 @@ public class AmmunitionWorkshopRenderer extends TileEntitySpecialRenderer<TileEn
 
 
 			//Shell
-			final IBullet finalBullet = bullet;
+			final IAmmo finalBullet = bullet;
 			final IBulletModel finalBulletModel = bulletModel;
 
 			ClientUtils.mc().getTextureManager().bindTexture(TEXTURE_INSERTER);
@@ -225,7 +228,8 @@ public class AmmunitionWorkshopRenderer extends TileEntitySpecialRenderer<TileEn
 								if(progress > 0.15+(5/7f*0.5f))
 									finalBulletModel.renderBulletUnused(finalBullet.getCore(te.effect).getColour(), finalBullet.getCoreType(te.effect), -1);
 								else if(progress > 0.15+(3/7f*0.5f))
-									return;
+								{
+								}
 								else if(progress > 0.15+(1/7f*0.5f))
 									finalBulletModel.renderCore(finalBullet.getCore(te.effect).getColour(), finalBullet.getCoreType(te.effect));
 							}:
@@ -285,7 +289,7 @@ public class AmmunitionWorkshopRenderer extends TileEntitySpecialRenderer<TileEn
 
 			GlStateManager.popMatrix();
 		}
-		else if(te==null)
+		else
 		{
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(x-0.25, y-0.25, z);
@@ -293,7 +297,7 @@ public class AmmunitionWorkshopRenderer extends TileEntitySpecialRenderer<TileEn
 			GlStateManager.rotate(-7.5f, 1, 0, 0);
 			GlStateManager.scale(0.23, 0.23, 0.23);
 			GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-			Utils.bindTexture(TEXTURE);
+			IIClientUtils.bindTexture(TEXTURE);
 
 			for(ModelRendererTurbo mod : model.baseModel)
 				mod.render();

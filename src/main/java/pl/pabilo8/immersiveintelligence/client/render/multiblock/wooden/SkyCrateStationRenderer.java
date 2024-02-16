@@ -20,15 +20,15 @@ import net.minecraft.tileentity.TileEntityBanner;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import pl.pabilo8.immersiveintelligence.Config.IIConfig.Machines.SkyCrateStation;
+import pl.pabilo8.immersiveintelligence.common.IIConfigHandler.IIConfig.Machines.SkyCrateStation;
 import pl.pabilo8.immersiveintelligence.ImmersiveIntelligence;
-import pl.pabilo8.immersiveintelligence.api.Utils;
+import pl.pabilo8.immersiveintelligence.common.IIUtils;
 import pl.pabilo8.immersiveintelligence.api.rotary.RotaryUtils;
-import pl.pabilo8.immersiveintelligence.api.utils.ISkycrateMount;
+import pl.pabilo8.immersiveintelligence.api.utils.tools.ISkycrateMount;
 import pl.pabilo8.immersiveintelligence.client.model.multiblock.wooden.ModelSkyCrateStation;
 import pl.pabilo8.immersiveintelligence.client.render.IReloadableModelContainer;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
-import pl.pabilo8.immersiveintelligence.common.blocks.multiblocks.wooden.TileEntitySkyCrateStation;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.common.block.multiblock.wooden_multiblock.tileentity.TileEntitySkyCrateStation;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -43,9 +43,9 @@ public class SkyCrateStationRenderer extends TileEntitySpecialRenderer<TileEntit
 {
 	private static ModelSkyCrateStation model;
 	private static ModelSkyCrateStation modelFlipped;
-	private static TileEntityBanner banner = new TileEntityBanner();
-	private static ModelBanner modelBanner = new ModelBanner();
-	private static String texture = ImmersiveIntelligence.MODID+":textures/blocks/multiblock/skycrate_station.png";
+	private static final TileEntityBanner banner = new TileEntityBanner();
+	private static final ModelBanner modelBanner = new ModelBanner();
+	private static final String texture = ImmersiveIntelligence.MODID+":textures/blocks/multiblock/skycrate_station.png";
 
 	static
 	{
@@ -66,7 +66,7 @@ public class SkyCrateStationRenderer extends TileEntitySpecialRenderer<TileEntit
 			RenderHelper.enableStandardItemLighting();
 			GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
 
-			float rpm_pitch = 0, rpm_grab = 0, rpm_crate = 0, rpm_gears = 0;
+			float rpm_pitch = 0, rpm_grab = 0, rpm_crate = 0, rpm_gears;
 			double motorTick = 0f;
 			float progress = 0f;
 			IConveyorBelt con = ConveyorHandler.getConveyor(new ResourceLocation("immersiveengineering:conveyor"), null);
@@ -123,9 +123,7 @@ public class SkyCrateStationRenderer extends TileEntitySpecialRenderer<TileEntit
 					animProgress = progress/SkyCrateStation.crateOutTime;
 					float finalAnimProgress = (float)animProgress;
 					drawCrate(te, animProgress, (double1) ->
-							{
-								GlStateManager.translate(-1.5*finalAnimProgress, 0, 0);
-							}
+							GlStateManager.translate(-1.5*finalAnimProgress, 0, 0)
 					);
 					convOutWork = true;
 					break;
@@ -303,7 +301,7 @@ public class SkyCrateStationRenderer extends TileEntitySpecialRenderer<TileEntit
 			if(conns!=null&&conns.size() > 0)
 			{
 				Connection conn = (Connection)conns.toArray()[0];
-				float[] col = Utils.rgbIntToRGB(conn.cableType.getColour(conn));
+				float[] col = IIUtils.rgbIntToRGB(conn.cableType.getColour(conn));
 				double diam = conn.cableType.getRenderDiameter();
 				GlStateManager.pushMatrix();
 				ClientUtils.bindTexture("immersiveengineering:textures/blocks/wire.png");

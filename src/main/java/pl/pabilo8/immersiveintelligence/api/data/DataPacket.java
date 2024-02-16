@@ -29,26 +29,35 @@ public class DataPacket implements Iterable<IDataType>
 
 	static
 	{
+		//null
 		varTypes.put("null", DataTypeNull.class);
 
+		//logic types
 		varTypes.put("boolean", DataTypeBoolean.class);
 
+		//number types
 		varTypes.put("integer", DataTypeInteger.class);
 		varTypes.put("float", DataTypeFloat.class);
-		//varTypes.put("vector", DataTypeVector.class);
-		//varTypes.put("range", DataTypeRange.class);
+		varTypes.put("vector", DataTypeVector.class);
 
+		//text types
 		varTypes.put("string", DataTypeString.class);
 
+		//statement types
 		varTypes.put("accessor", DataTypeAccessor.class);
 		varTypes.put("expression", DataTypeExpression.class);
 
-		varTypes.put("itemstack", DataTypeItemStack.class);
-		varTypes.put("entity", DataTypeEntity.class);
-
+		//collection types
 		varTypes.put("array", DataTypeArray.class);
 		varTypes.put("map", DataTypeMap.class);
 
+		//in-world types
+		varTypes.put("itemstack", DataTypeItemStack.class);
+		varTypes.put("fluidstack", DataTypeFluidStack.class);
+		varTypes.put("entity", DataTypeEntity.class);
+
+		//cryptographic types
+		varTypes.put("encrypted", DataTypeEncrypted.class);
 	}
 
 	@Nonnull
@@ -67,8 +76,7 @@ public class DataPacket implements Iterable<IDataType>
 			IDataType data = type.isAnnotationPresent(IGenericDataType.class)?(type.getAnnotation(IGenericDataType.class).defaultType().newInstance()): type.newInstance();
 			data.setDefaultValue();
 			return data;
-		}
-		catch(InstantiationException|IllegalAccessException ignored)
+		} catch(InstantiationException|IllegalAccessException ignored)
 		{
 		}
 		return new DataTypeNull();
@@ -78,7 +86,7 @@ public class DataPacket implements Iterable<IDataType>
 	 * @param preferred type, can be {@link IDataType} for *any* type and an interface annotated with {@link IGenericDataType} a generic/bridging type
 	 * @param actual    actual tag in packet, if null a default value of preferred type will be returned
 	 * @param <T>       the returned datatype
-	 * @return datatype provided in preferred class or a new instance of it
+	 * @return datatype provided in preferred class or a new INSTANCE of it
 	 */
 	@Nonnull
 	public <T extends IDataType> T getVarInType(Class<T> preferred, @Nullable IDataType actual)
@@ -105,8 +113,7 @@ public class DataPacket implements Iterable<IDataType>
 					IDataType p = preferred.newInstance();
 					p.setDefaultValue();
 					return preferred.cast(p);
-				}
-				catch(InstantiationException|IllegalAccessException ignored)
+				} catch(InstantiationException|IllegalAccessException ignored)
 				{
 				}
 			}
@@ -222,8 +229,7 @@ public class DataPacket implements Iterable<IDataType>
 					try
 					{
 						data = varTypes.get(type).newInstance();
-					}
-					catch(InstantiationException|IllegalAccessException e)
+					} catch(InstantiationException|IllegalAccessException e)
 					{
 						e.printStackTrace();
 					}
@@ -281,5 +287,10 @@ public class DataPacket implements Iterable<IDataType>
 	public Iterator<IDataType> iterator()
 	{
 		return variables.values().iterator();
+	}
+
+	public int size()
+	{
+		return variables.size();
 	}
 }

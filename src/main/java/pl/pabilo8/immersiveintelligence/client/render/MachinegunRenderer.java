@@ -2,36 +2,30 @@ package pl.pabilo8.immersiveintelligence.client.render;
 
 import blusunrize.immersiveengineering.client.ClientUtils;
 import blusunrize.immersiveengineering.common.util.ItemNBTHelper;
-import com.google.common.collect.ArrayListMultimap;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import pl.pabilo8.immersiveintelligence.Config.IIConfig.Weapons.Machinegun;
-import pl.pabilo8.immersiveintelligence.CustomSkinHandler;
-import pl.pabilo8.immersiveintelligence.CustomSkinHandler.SpecialSkin;
-import pl.pabilo8.immersiveintelligence.api.Utils;
-import pl.pabilo8.immersiveintelligence.api.bullets.BulletRegistry;
-import pl.pabilo8.immersiveintelligence.api.bullets.BulletRegistry.EnumCoreTypes;
+import pl.pabilo8.immersiveintelligence.common.IIConfigHandler.IIConfig.Weapons.Machinegun;
+import pl.pabilo8.immersiveintelligence.common.item.weapons.ItemIIMachinegun;
+import pl.pabilo8.immersiveintelligence.common.util.IISkinHandler;
+import pl.pabilo8.immersiveintelligence.common.util.IISkinHandler.IISpecialSkin;
+import pl.pabilo8.immersiveintelligence.api.bullets.AmmoRegistry;
 import pl.pabilo8.immersiveintelligence.client.model.IBulletModel;
 import pl.pabilo8.immersiveintelligence.client.model.weapon.ModelMachinegun;
-import pl.pabilo8.immersiveintelligence.client.tmt.ModelRendererTurbo;
-import pl.pabilo8.immersiveintelligence.client.tmt.TmtNamedBoxGroup;
-import pl.pabilo8.immersiveintelligence.common.CommonProxy;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.ModelRendererTurbo;
+import pl.pabilo8.immersiveintelligence.client.util.tmt.TmtNamedBoxGroup;
 import pl.pabilo8.immersiveintelligence.common.IIContent;
-import pl.pabilo8.immersiveintelligence.common.blocks.metal.TileEntityAmmunitionCrate;
+import pl.pabilo8.immersiveintelligence.common.block.metal_device.tileentity.effect_crate.TileEntityAmmunitionCrate;
 import pl.pabilo8.immersiveintelligence.common.entity.EntityMachinegun;
-import pl.pabilo8.immersiveintelligence.common.network.IIPacketHandler;
-import pl.pabilo8.immersiveintelligence.common.network.MessageEntityNBTSync;
+import pl.pabilo8.immersiveintelligence.common.util.IIReference;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -60,16 +54,18 @@ public class MachinegunRenderer extends Render<EntityMachinegun> implements IRel
 	{
 		GlStateManager.pushMatrix();
 		List<TmtNamedBoxGroup> renderParts = new ArrayList<>(defaultGunParts);
-		boolean drawText = false;
+		boolean drawText = false, canApply = false;
 		String specialText;
 		int textColor = 0xffffff;
 
 		String skin = IIContent.itemMachinegun.getSkinnableCurrentSkin(stack);
 		if(!skin.isEmpty())
 		{
-			SpecialSkin s = CustomSkinHandler.specialSkins.get(skin);
+			IISpecialSkin s = IISkinHandler.specialSkins.get(skin);
 			if(s!=null)
 			{
+				ItemIIMachinegun gun = (ItemIIMachinegun)stack.getItem();
+				canApply = s.doesApply(gun.getSkinnableName());
 				textColor = s.textColor;
 				if(s.mods.contains("skin_mg_text"))
 					drawText = true;
@@ -81,7 +77,7 @@ public class MachinegunRenderer extends Render<EntityMachinegun> implements IRel
 
 		}
 		specialText = I18n.format("skin.immersiveintelligence."+skin+".name");
-		skin = (skin.isEmpty()?IIContent.itemMachinegun.getSkinnableDefaultTextureLocation(): CommonProxy.SKIN_LOCATION+skin+"/");
+		skin = ((skin.isEmpty()&&!canApply)?IIContent.itemMachinegun.getSkinnableDefaultTextureLocation(): IIReference.SKIN_LOCATION+skin+"/");
 
 
 		ClientUtils.bindTexture(skin+texture);
@@ -173,130 +169,133 @@ public class MachinegunRenderer extends Render<EntityMachinegun> implements IRel
 					GlStateManager.rotate(-pitch, 1, 0, 0);
 					GlStateManager.translate(-0.5f, 0.34375, 1.65625+(pitch/20*0.25));
 
-					if(nmod.getName().equals("ammo"))
+					switch(nmod.getName())
 					{
-						boolean should_render = false;
-						if(entity.currentlyLoaded==1)
+						case "ammo":
 						{
-
-							float progress = entity.magazine1.isEmpty()?1f-Math.min(2*(float)entity.clipReload/(float)Machinegun.clipReloadTime, 1): (float)entity.clipReload/(float)Machinegun.clipReloadTime;
-							GlStateManager.translate(0f, 0.375f*progress, 0f);
-							should_render = true;
-						}
-						else if(!entity.magazine1.isEmpty())
-							should_render = true;
-
-						if(should_render)
-							nmod.render(0.0625f);
-					}
-					else if(nmod.getName().equals("belt_fed_loader"))
-					{
-						nmod.render(0.0625f);
-						IBulletModel mm = BulletRegistry.INSTANCE.registeredModels.get("mg_2bCal");
-						GlStateManager.pushMatrix();
-						GlStateManager.translate(0.69f, 0.65f, -0.0625f+(-0.0625f*1.5f));
-						GlStateManager.rotate(180, 0, 1, 0);
-						GlStateManager.rotate(90, 1, 0, 0);
-						GlStateManager.scale(0.5f, 0.5f, 0.5f);
-
-						BlockPos cratePos = entity.getPosition().offset(EnumFacing.fromAngle(entity.setYaw).getOpposite()).down();
-						if(entity.getEntityWorld().getTileEntity(cratePos) instanceof TileEntityAmmunitionCrate)
-						{
-							TileEntityAmmunitionCrate crate = ((TileEntityAmmunitionCrate)entity.getEntityWorld().getTileEntity(cratePos));
-							assert crate!=null;
-
-							int beltLength = (int)(24 + (Math.max(Math.abs(entity.gunYaw)-55,0)/2) - (Math.max(entity.gunPitch-20,0)/2));
-
-							if(crate.open&&crate.hasUpgrade(IIContent.UPGRADE_MG_LOADER))
+							boolean should_render = false;
+							if(entity.currentlyLoaded==1)
 							{
-								ArrayList<ItemStack> ammoStacks = new ArrayList<>();
-								for(int i = 38, cc = 0; i < 50&&cc < beltLength; i++)
-								{
-									ItemStack bs = crate.getInventory().get(i);
-									if(!bs.isEmpty())
-									{
-										ammoStacks.add(bs.copy());
-										cc += bs.getCount();
-									}
-								}
 
-								beltLength-=4;
-								float ammoDir = ((entity.gunYaw)/(entity.tripod?90f:50f))*(1-((Math.abs(entity.gunPitch))/40f));
-								float ammoTurn = entity.tripod?((Math.abs(entity.gunYaw)/90f)*(beltLength>24?(beltLength-24)/24f:1)):0;
-
-								GlStateManager.pushMatrix();
-								for(int i = 0; i < 4&&ammoStacks.size() > 0; i++)
-								{
-									mm.renderBulletUnused(ammoStacks.get(0));
-									GlStateManager.rotate(180f/4f, 0, 1, 0);
-									GlStateManager.translate(0, 0, -0.1225f);
-
-									ammoStacks.get(0).shrink(1);
-									if(ammoStacks.get(0).getCount() <= 0)
-										ammoStacks.remove(0);
-								}
-								GlStateManager.popMatrix();
-
-								GlStateManager.translate(-0.25f, 0, 0.25);
-								GlStateManager.pushMatrix();
-								for(int i = 0; i < beltLength&&ammoStacks.size() > 0; i++)
-								{
-									mm.renderBulletUnused(ammoStacks.get(0));
-									GlStateManager.translate(0f, 0, 0.125f);
-
-									GlStateManager.rotate(ammoDir*-5f, 0, 1, 0);
-									GlStateManager.rotate(ammoTurn*-8f, 1, 0, 0);
-
-									ammoStacks.get(0).shrink(1);
-									if(ammoStacks.get(0).getCount() <= 0)
-										ammoStacks.remove(0);
-
-								}
-								GlStateManager.popMatrix();
+								float progress = entity.magazine1.isEmpty()?1f-Math.min(2*(float)entity.clipReload/(float)Machinegun.clipReloadTime, 1): (float)entity.clipReload/(float)Machinegun.clipReloadTime;
+								GlStateManager.translate(0f, 0.375f*progress, 0f);
+								should_render = true;
 							}
+							else if(!entity.magazine1.isEmpty())
+								should_render = true;
+
+							if(should_render)
+								nmod.render(0.0625f);
+							break;
 						}
-
-
-						GlStateManager.popMatrix();
-					}
-					else if(nmod.getName().equals("second_magazine_mag"))
-					{
-						boolean should_render = false;
-						if(entity.currentlyLoaded==2)
-						{
-
-							float progress = entity.magazine2.isEmpty()?1f-Math.min(2*(float)entity.clipReload/(float)Machinegun.clipReloadTime, 1): (float)entity.clipReload/(float)Machinegun.clipReloadTime;
-							GlStateManager.translate(0f, 0.375f*progress, 0f);
-							should_render = true;
-						}
-						else if(!entity.magazine2.isEmpty())
-							should_render = true;
-
-						if(should_render)
+						case "belt_fed_loader":
 							nmod.render(0.0625f);
-					}
-					else if(nmod.getName().equals("slide"))
-					{
-						if(((entity.currentlyLoaded==1&&entity.magazine1.isEmpty())||(entity.currentlyLoaded==2&&entity.magazine2.isEmpty()))&&((float)entity.clipReload/(float)Machinegun.clipReloadTime) > 0.5)
+							IBulletModel mm = AmmoRegistry.INSTANCE.registeredModels.get("mg_2bCal");
+							GlStateManager.pushMatrix();
+							GlStateManager.translate(0.69f, 0.65f, -0.0625f+(-0.0625f*1.5f));
+							GlStateManager.rotate(180, 0, 1, 0);
+							GlStateManager.rotate(90, 1, 0, 0);
+							GlStateManager.scale(0.5f, 0.5f, 0.5f);
+
+							BlockPos cratePos = entity.getPosition().offset(EnumFacing.fromAngle(entity.setYaw).getOpposite()).down();
+							if(entity.getEntityWorld().getTileEntity(cratePos) instanceof TileEntityAmmunitionCrate)
+							{
+								TileEntityAmmunitionCrate crate = ((TileEntityAmmunitionCrate)entity.getEntityWorld().getTileEntity(cratePos));
+								assert crate!=null;
+
+								int beltLength = (int)(24+(Math.max(Math.abs(entity.gunYaw)-55, 0)/2)-(Math.max(entity.gunPitch-20, 0)/2));
+
+								if(crate.open&&crate.hasUpgrade(IIContent.UPGRADE_MG_LOADER))
+								{
+									ArrayList<ItemStack> ammoStacks = new ArrayList<>();
+									for(int i = 38, cc = 0; i < 50&&cc < beltLength; i++)
+									{
+										ItemStack bs = crate.getInventory().get(i);
+										if(!bs.isEmpty())
+										{
+											ammoStacks.add(bs.copy());
+											cc += bs.getCount();
+										}
+									}
+
+									beltLength -= 4;
+									float ammoDir = ((entity.gunYaw)/(entity.tripod?90f: 50f))*(1-((Math.abs(entity.gunPitch))/40f));
+									float ammoTurn = entity.tripod?((Math.abs(entity.gunYaw)/90f)*(beltLength > 24?(beltLength-24)/24f: 1)): 0;
+
+									GlStateManager.pushMatrix();
+									for(int i = 0; i < 4&&ammoStacks.size() > 0; i++)
+									{
+										mm.renderBulletUnused(ammoStacks.get(0));
+										GlStateManager.rotate(180f/4f, 0, 1, 0);
+										GlStateManager.translate(0, 0, -0.1225f);
+
+										ammoStacks.get(0).shrink(1);
+										if(ammoStacks.get(0).getCount() <= 0)
+											ammoStacks.remove(0);
+									}
+									GlStateManager.popMatrix();
+
+									GlStateManager.translate(-0.25f, 0, 0.25);
+									GlStateManager.pushMatrix();
+									for(int i = 0; i < beltLength&&ammoStacks.size() > 0; i++)
+									{
+										mm.renderBulletUnused(ammoStacks.get(0));
+										GlStateManager.translate(0f, 0, 0.125f);
+
+										GlStateManager.rotate(ammoDir*-5f, 0, 1, 0);
+										GlStateManager.rotate(ammoTurn*-8f, 1, 0, 0);
+
+										ammoStacks.get(0).shrink(1);
+										if(ammoStacks.get(0).getCount() <= 0)
+											ammoStacks.remove(0);
+
+									}
+									GlStateManager.popMatrix();
+								}
+							}
+
+
+							GlStateManager.popMatrix();
+							break;
+						case "second_magazine_mag":
 						{
-							float curr = (((float)entity.clipReload/(float)Machinegun.clipReloadTime)-0.5f)/0.5f;
-							float progress;
-							if(curr > 0.65)
-								progress = 1f-((curr-0.65f)/0.35f);
-							else
-								progress = (curr/0.65f);
-							GlStateManager.translate(0f, 0f, progress*0.375);
+							boolean should_render = false;
+							if(entity.currentlyLoaded==2)
+							{
+
+								float progress = entity.magazine2.isEmpty()?1f-Math.min(2*(float)entity.clipReload/(float)Machinegun.clipReloadTime, 1): (float)entity.clipReload/(float)Machinegun.clipReloadTime;
+								GlStateManager.translate(0f, 0.375f*progress, 0f);
+								should_render = true;
+							}
+							else if(!entity.magazine2.isEmpty())
+								should_render = true;
+
+							if(should_render)
+								nmod.render(0.0625f);
+							break;
 						}
-						nmod.render(0.0625f);
+						case "slide":
+							if(((entity.currentlyLoaded==1&&entity.magazine1.isEmpty())||(entity.currentlyLoaded==2&&entity.magazine2.isEmpty()))&&((float)entity.clipReload/(float)Machinegun.clipReloadTime) > 0.5)
+							{
+								float curr = (((float)entity.clipReload/(float)Machinegun.clipReloadTime)-0.5f)/0.5f;
+								float progress;
+								if(curr > 0.65)
+									progress = 1f-((curr-0.65f)/0.35f);
+								else
+									progress = (curr/0.65f);
+								GlStateManager.translate(0f, 0f, progress*0.375);
+							}
+							nmod.render(0.0625f);
+							break;
+						case "shield":
+							ClientUtils.bindTexture(skin+nmod.getTexturePath());
+							nmod.render(0.0625f);
+							//TODO: add breaking progress
+							break;
+						default:
+							nmod.render(0.0625f);
+							break;
 					}
-					else if(nmod.getName().equals("shield"))
-					{
-						ClientUtils.bindTexture(skin+nmod.getTexturePath());
-						nmod.render(0.0625f);
-						//TODO: add breaking progress
-					}
-					else
-						nmod.render(0.0625f);
 					GlStateManager.popMatrix();
 				}
 			}
@@ -323,26 +322,6 @@ public class MachinegunRenderer extends Render<EntityMachinegun> implements IRel
 		}
 
 		GlStateManager.popMatrix();
-	}
-
-	public static void drawBulletsList(ItemStack stack)
-	{
-		RenderHelper.enableGUIStandardItemLighting();
-		GlStateManager.enableDepth();
-
-		RenderItem ir = ClientUtils.mc().getRenderItem();
-		NBTTagList listDict = ItemNBTHelper.getTagCompound(stack, "bullets").getTagList("dictionary", 10);
-
-		if(ItemNBTHelper.hasKey(stack, "bullet0"))
-			ir.renderItemIntoGUI(new ItemStack(listDict.getCompoundTagAt(0)), 0, 0);
-		if(ItemNBTHelper.hasKey(stack, "bullet1"))
-			ir.renderItemIntoGUI(new ItemStack(listDict.getCompoundTagAt(1)), 0, 22);
-		if(ItemNBTHelper.hasKey(stack, "bullet2"))
-			ir.renderItemIntoGUI(new ItemStack(listDict.getCompoundTagAt(2)), 0, 44);
-		if(ItemNBTHelper.hasKey(stack, "bullet3"))
-			ir.renderItemIntoGUI(new ItemStack(listDict.getCompoundTagAt(3)), 0, 66);
-
-		GlStateManager.disableDepth();
 	}
 
 	/**
